@@ -68,3 +68,7 @@ ggplot(prices)+
 ggplot(prices)+
   geom_point(mapping = aes(x = prev_week_price, y = prev_day_price))
 
+
+
+# test modif
+
