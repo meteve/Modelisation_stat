@@ -3,8 +3,6 @@ library(tidyverse)
 library(mgcv)
 library(lubridate)
 library(fastDummies)
-#install.packages("fastDummies"
-# re à tous mes snappeurs
 
 
 

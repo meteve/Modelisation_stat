@@ -4,7 +4,6 @@ library(tidyverse)
 prices <- read_csv(file = "data/tidy_prices.csv")
 
 
-# test
 
 # ANALYSE BIVARIEE --------------------------------------------------------
 
