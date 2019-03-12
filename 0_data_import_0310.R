@@ -40,6 +40,10 @@ prices <- prices %>%
 prices$day <- tolower(prices$day)
 
 
+prices$day_num <- as.numeric(as.factor(prices$day))
+
+
+
 
 #### prix a la journee precedente
 
