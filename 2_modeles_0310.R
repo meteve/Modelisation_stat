@@ -1,5 +1,7 @@
 
 library(tidyverse)
+library(mgcv)
+
 
 prices <- read_csv(file = "data/tidy_prices.csv")
 
@@ -22,3 +24,16 @@ summary(zebi3)
 zebi4=ar(prices$Zonal_Price, method="yw", aic = TRUE, order.max = NULL)
 summary(zebi4)
 
+
+
+
+class(prices$day)
+
+
+# GAM ---------------------------------------------------------------------
+
+gam_1 <- gam(formula = Zonal_Price ~ s(day) + prev_day_price + prev_week_price +
+               Min_Price, data = prices[169:nrow(prices),])
+
+
+summary(gam_1)
