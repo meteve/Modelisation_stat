@@ -4,6 +4,8 @@ library(mgcv)
 library(lubridate)
 library(fastDummies)
 
+#rm(list=ls())
+
 
 
 # IMPORTATION DES DONNEES -------------------------------------------------
@@ -43,6 +45,16 @@ previous_day_price <- apply(as.matrix(25:nrow(prices)), 1,
 previous_day_price_NA <- rep(NA, 24)
 
 prices$prev_day_price <- c(previous_day_price_NA, previous_day_price)
+
+
+### Prix à deux jours avant : 
+
+previous_day2_price <- apply(as.matrix(49:nrow(prices)), 1,
+                            function(i){prices$Zonal_Price[(i-48)]})
+previous_day2_price_NA <- rep(NA, 48)
+
+prices$prev_day2_price <- c(previous_day2_price_NA, previous_day2_price)
+
 
 
 #### prix a la semaine precedente
