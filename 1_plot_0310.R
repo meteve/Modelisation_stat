@@ -5,6 +5,7 @@ prices <- read_csv(file = "data/tidy_prices.csv")
 
 
 
+
 # ANALYSE BIVARIEE --------------------------------------------------------
 
 
@@ -52,6 +53,15 @@ ggplot(prices2012) +
 ggplot(prices2013) +
   geom_line(mapping = aes(x = timestamp, y = Zonal_Price))
 
+
+# par semaine
+prices_week1 <- prices[1:168,]
+ggplot(prices_week1) +
+  geom_line(mapping = aes(x = timestamp, y = Zonal_Price))
+
+prices_week7 <- prices[1000:1168,]
+ggplot(prices_week7) +
+  geom_line(mapping = aes(x = timestamp, y = Zonal_Price))
 
 
 #### Suite analyse bivariée : 
