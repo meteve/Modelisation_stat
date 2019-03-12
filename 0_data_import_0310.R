@@ -37,6 +37,9 @@ prices <- rename(prices, ZONEID = ZONEID, timestamp = timestamp,
 prices <- prices %>%
   mutate(day = weekdays(as.Date(timestamp)))
 
+prices$day <- tolower(prices$day)
+
+
 
 #### prix a la journee precedente
 
