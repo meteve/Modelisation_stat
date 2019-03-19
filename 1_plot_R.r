@@ -1,8 +1,8 @@
 
 library(tidyverse)
 
-#prices <- read_csv(file = "data/tidy_prices.csv")
-prices
+prices <- read_csv(file = "data/tidy_prices.csv")
+
 
 
 
@@ -135,10 +135,28 @@ ggplot(pdldec)+
   geom_line(mapping=aes(x=timestamp,y=Zonal_Price),colour='red')
 
 
+ggplot(data = pdldec) +
+  geom_line(mapping = aes(x = timestamp[1:24], y = Zonal_Price[1:24]))
 
+pdldec_d <- pdldec[1:24,]
+pdldec_l <- pdldec[25:48,]
 
+pdldec_d$Type = "Dimanche"
+pdldec_l$Type = "Lundi"
 
+df1 = data.frame(Value = c(2,3,4,5),
+                 Frequency = c(1,7,19,9),
+                 Percentage = c(2.77,19.44,52.77,25))
+df2 = data.frame(Value = c(1,2,3,4,5),
+                 Frequency = c(2,3,8,20,20),
+                 Percentage = c(3.77,5.66,15.09,37.73,37.73))
 
+df1$Type = "A"
+df2$Type = "B"
+
+dfw = rbind(df1,df2)
+
+ggplot(data = dfw, aes(x = Value, y = Percentage, color = Type)) + geom_line()
 
 
 
