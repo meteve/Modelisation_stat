@@ -5,40 +5,6 @@ library(RColorBrewer)
 
 prices <- read_csv(file = "data/tidy_prices.csv")
 
-
-
-
-# ANALYSE BIVARIEE --------------------------------------------------------
-
-
-
-#### variables continues de demande locale et totale
-
-ggplot(prices) +
-  geom_point(mapping = aes(x = Forecasted_Total_Load, y = Forecasted_Zonal_Load))
-
-# relation lineaire entre les variables de demande
-
-#### variables de demande en fonction du prix
-
-ggplot(prices) +
-  geom_point(mapping = aes(x = Zonal_Price, y = Forecasted_Total_Load))
-
-ggplot(prices) +
-  geom_point(mapping = aes(x = Zonal_Price, y = Forecasted_Zonal_Load))
-
-
-
-
-#### variables de prix et de date
-
-# sur la serie complete (toutes les dates)
-
-ggplot(prices) +
-  geom_line(mapping = aes(x = timestamp, y = Zonal_Price))
-
-
-
 # par annee
 prices2011 <- filter(prices, grepl(pattern = '2011.', timestamp))
 prices2012 <- filter(prices, grepl(pattern = '2012.', timestamp))
@@ -58,14 +24,6 @@ pdldec=rbind(prices8dec2013,prices9dec2013)
 
 
 
-ggplot(prices2011) +
-  geom_line(mapping = aes(x = timestamp, y = Zonal_Price))
-ggplot(prices2012) +
-  geom_line(mapping = aes(x = timestamp, y = Zonal_Price))
-ggplot(prices2013) +
-  geom_line(mapping = aes(x = timestamp, y = Zonal_Price))
-
-
 # par semaine
 prices_week1 <- prices[1:168,]
 ggplot(prices_week1) +
@@ -76,9 +34,9 @@ ggplot(prices_week7) +
   geom_line(mapping = aes(x = timestamp, y = Zonal_Price))
 
 
-#### Suite analyse bivariée : 
-#############################
 
+
+# Prix en fonction des prix passés
 
 ggplot(prices)+
   geom_point(mapping = aes(x = Zonal_Price, y = prev_day_price))
@@ -88,8 +46,6 @@ ggplot(prices)+
 
 ggplot(prices)+
   geom_point(mapping = aes(x = prev_week_price, y = prev_day_price))
-
-
 
 
 #### La petite analyse du bon Jerem : 
@@ -159,22 +115,64 @@ h+theme(
   axis.title.y = element_text(color="black", size=14)
 )
 
+# 2011
 date <- rep(c(prices2011$timestamp), 2)
 type <- c(rep("price", nrow(prices2011)), rep("zonal_load", nrow(prices2011)))
 values <- c(prices2011$Zonal_Price, (prices2011$Forecasted_Zonal_Load)/120)
 
 df_graph_2011 <- tibble(values, type, date)
 
-ggplot(df_graph_2011) +
+i<-ggplot(df_graph_2011) +
   geom_line(mapping = aes(x = date, y = values, color = type)) +
-  scale_colour_brewer(name = "Coucou",
+  ggtitle("Prix et consommation 2011")+
+  scale_colour_brewer(name = "Légende",
                     palette = "Dark2")
 
+i+theme(
+  plot.title = element_text(color="black", size=14,hjust=0.5),
+  axis.title.x = element_text(color="black", size=14),
+  axis.title.y = element_text(color="black", size=14)
+)
+
+# 2012
+date <- rep(c(prices2012$timestamp), 2)
+type <- c(rep("price", nrow(prices2012)), rep("zonal_load", nrow(prices2012)))
+values <- c(prices2012$Zonal_Price, (prices2012$Forecasted_Zonal_Load)/150)
+
+df_graph_2012 <- tibble(values, type, date)
+
+j<-ggplot(df_graph_2012) +
+  geom_line(mapping = aes(x = date, y = values, color = type)) +
+  ggtitle("Prix et consommation 2012")+
+  scale_colour_brewer(name = "Légende",
+                      palette = "Dark2")
+
+j+theme(
+  plot.title = element_text(color="black", size=14,hjust=0.5),
+  axis.title.x = element_text(color="black", size=14),
+  axis.title.y = element_text(color="black", size=14)
+)
 
 
+# 2013
+date <- rep(c(prices2013$timestamp), 2)
+type <- c(rep("price", nrow(prices2013)), rep("zonal_load", nrow(prices2013)))
+values <- c(prices2013$Zonal_Price, (prices2013$Forecasted_Zonal_Load)/120)
 
-summary(prices2011$Zonal_Price)
-summary(prices2011$Forecasted_Zonal_Load/120)
+df_graph_2013 <- tibble(values, type, date)
+
+j<-ggplot(df_graph_2013) +
+  geom_line(mapping = aes(x = date, y = values, color = type)) +
+  ggtitle("Prix et consommation 2013")+
+  scale_colour_brewer(name = "Légende",
+                      palette = "Dark2")
+
+j+theme(
+  plot.title = element_text(color="black", size=14,hjust=0.5),
+  axis.title.x = element_text(color="black", size=14),
+  axis.title.y = element_text(color="black", size=14)
+)
+
 
 # Pour avoir les autres années, on remplace le 2012
 
@@ -185,9 +183,23 @@ summary(prices2013$Forecasted_Zonal_Load/120)
 
 # Comparaison de prix au 5 novembre (arbitraire) : 
 ##################################################
-ggplot(prices5nov2013)+
-  geom_line(mapping=aes(x=timestamp,y=Zonal_Price,colour='green'),colour='red')
-# Changer le 2013 pour les années
+# Création du dataframe pour les 3 "5novembre"
+hour5<-rep(c(prices5nov2011$hour),3)
+type5<-c(rep("2011",nrow(prices5nov2011)),rep("2012",nrow(prices5nov2012)),rep("2013",nrow(prices5nov2013)))
+values5<-c(prices5nov2011$Zonal_Price,prices5nov2012$Zonal_Price,prices5nov2013$Zonal_Price)
+df5nov<-tibble(values5,type5,hour5)
+
+k<-ggplot(df5nov)+
+  geom_line(mapping=aes(x=hour5,y=values5,color=type5))+
+  ggtitle("Prix au 5 novembre")+
+  scale_colour_brewer(name="Légende",palette="Dark2")
+k
+j<-ggplot(df_graph_2012) +
+  geom_line(mapping = aes(x = date, y = values, color = type)) +
+  ggtitle("Prix et consommation 2012")+
+  scale_colour_brewer(name = "Légende",
+                      palette = "Dark2")
+
 
 
 
@@ -198,6 +210,7 @@ ggplot(data = pdldec) +
   scale_fill_brewer(name = "Opinion concernant\nl'état de l'envrionnement",
                     palette = "Dark2")
 
+# Comparaison des prix sur les 3 années
 
 
 
