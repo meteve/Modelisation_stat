@@ -19,9 +19,9 @@ prices <- read_delim("data/prices.csv", delim = ";",
 
 # on remplace les espaces par des underscore dans les noms de colonnes
 prices <- rename(prices, ZONEID = ZONEID, timestamp = timestamp,
-                 Forecasted_Total_Load = Forecasted Total Load,
-                 Forecasted_Zonal_Load = Forecasted Zonal Load,
-                 Zonal_Price = Zonal Price)
+                 Forecasted_Total_Load = `Forecasted Total Load`,
+                 Forecasted_Zonal_Load = `Forecasted Zonal Load`,
+                 Zonal_Price = `Zonal Price`)
 
 
 
