@@ -5,34 +5,97 @@ library(RColorBrewer)
 
 prices <- read_csv(file = "data/tidy_prices.csv")
 
-# par annee
+
+
+
+
+
+# Analyse univariee du prix -----------------------------------------------
+
+
+
+# SUR TOUTE LA PERIODE 
+
+plot_prices_total <- ggplot(data = prices) +
+  geom_line(mapping =aes(x = timestamp, y = Zonal_Price)) +
+  theme(
+  axis.title.x = element_text(color="black", size=14),
+  axis.title.y = element_text(color="black", size=14)) +
+  xlab("") + ylab("Prix dans la zone étudiée")
+
+plot_prices_total
+
+
+
+
+# PAR ANNEE
 prices2011 <- filter(prices, grepl(pattern = '2011.', timestamp))
 prices2012 <- filter(prices, grepl(pattern = '2012.', timestamp))
 prices2013 <- filter(prices, grepl(pattern = '2013.', timestamp))
 
-# Création dataframe5novembre:
-prices5nov2011<-filter(prices,grepl(pattern='2011-11-05.',timestamp))
-prices5nov2012<-filter(prices,grepl(pattern='2012-11-05.',timestamp))
-prices5nov2013<-filter(prices,grepl(pattern='2013-11-05.',timestamp))
-prices5dec2013<-filter(prices,grepl(pattern='2013-12-05.',timestamp)) # pour identifier un lundi et dimanche
+
+ggplot(data = prices2011) +
+  geom_line(mapping =aes(x = timestamp, y = Zonal_Price)) +
+  xlab("") + ylab("Prix dans la zone étudiée")
+
+ggplot(data = prices2012) +
+  geom_line(mapping =aes(x = timestamp, y = Zonal_Price)) +
+  xlab("") + ylab("Prix dans la zone étudiée")
+
+ggplot(data = prices2013) +
+  geom_line(mapping =aes(x = timestamp, y = Zonal_Price)) +
+  xlab("") + ylab("Prix dans la zone étudiée")
+
+
+
+
+# PAR SEMAINE
+
+# fonction qui plot les prix pour une semaine donnee
+# prend comme argument la date d'un jour et plot les prix sur la semaine
+
+plot_price_week <- function(date){
+  index <- which(prices$timestamp == date)
+  prices_week <- prices[index:(index+168),]
+  p <- ggplot(prices_week) +
+    geom_line(mapping = aes(x = timestamp, y = Zonal_Price))
+  return(p)
+}
+
+#plot des premieres semaines de chaque mois de 2013
+
+plot_price_week('2013-01-07') #janvier
+plot_price_week('2013-02-04') #fevrier
+plot_price_week('2013-03-04') #mars
+plot_price_week('2013-04-01') #avril
+plot_price_week('2013-05-06') #mai
+plot_price_week('2013-06-03') #juin
+plot_price_week('2013-07-01') #juillet
+plot_price_week('2013-08-05') #aout
+plot_price_week('2013-09-02') #septembre
+plot_price_week('2013-10-07') #octobre
+plot_price_week('2013-11-04') #novembre
+plot_price_week('2013-12-02') #decembre
+
+
+
+
+# PAR JOUR
 
 # Création dataframe d'un dimanche et d'un lundi de décembre pour comparer
-prices8dec2013<-filter(prices,grepl(pattern='2013-12-08.',timestamp)) # un dimanche
-prices9dec2013<-filter(prices,grepl(pattern='2013-12-09.',timestamp)) # un lundi
-pricesdimlunddec<-c(prices8dec2013,prices9dec2013)
+prices8dec2013 <- filter(prices,grepl(pattern='2013-12-08.',timestamp)) # un dimanche
+prices9dec2013 <- filter(prices,grepl(pattern='2013-12-09.',timestamp)) # un lundi
+pricesdimlunddec <- c(prices8dec2013,prices9dec2013)
 pdldec=rbind(prices8dec2013,prices9dec2013)
 
 
 
-# par semaine
-prices_week1 <- prices[1:168,]
-ggplot(prices_week1) +
-  geom_line(mapping = aes(x = timestamp, y = Zonal_Price))
+# Comparaison d'un dimanche et lundi : 
 
-prices_week7 <- prices[1000:1168,]
-ggplot(prices_week7) +
-  geom_line(mapping = aes(x = timestamp, y = Zonal_Price))
-
+ggplot(data = pdldec) +
+  geom_line(mapping = aes(x = hour, y = Zonal_Price, color = day)) +
+  scale_fill_brewer(name = "Opinion concernant\nl'état de l'envrionnement",
+                    palette = "Dark2")
 
 
 
@@ -48,61 +111,14 @@ ggplot(prices)+
   geom_point(mapping = aes(x = prev_week_price, y = prev_day_price))
 
 
-#### La petite analyse du bon Jerem : 
-#####################################
-
-
-
-# Evolution du prix sur toute la période : 
-a <- ggplot(prices)+
-  geom_line(mapping =aes(x = timestamp, y = Zonal_Price))+
-  ggtitle("Evolution du prix sur la période")
-
-a + theme(
-  plot.title = element_text(color="black", size=14,hjust=0.5),
-  axis.title.x = element_text(color="black", size=14),
-  axis.title.y = element_text(color="black", size=14)
-)
-
-
-# Evolution du prix pour chaque année :
-années=list(prices2011,prices2012,prices2013)
-for(k in années){
-  g=ggplot(k)+
-    geom_point(mapping=aes(x=timestamp,y=Zonal_Price))
-  g
-}
-
-d<-ggplot(prices2013)+
-  geom_line(mapping =aes(x = timestamp, y = Zonal_Price))+
-  ggtitle("Evolution du prix sur la période 2013")
-
-d + theme(
-  plot.title = element_text(color="black", size=14,hjust=0.5),
-  axis.title.x = element_text(color="black", size=14),
-  axis.title.y = element_text(color="black", size=14)
-)
-
-
-
-# Evolution de la consommation pour chaque année : 
-g<-ggplot(prices2012)+
-  geom_line(mapping=aes(x=timestamp,y=Forecasted_Zonal_Load))+
-  ggtitle("Evolution de la consommation sur la période 2013")
-
-g + theme(
-  plot.title = element_text(color="black", size=14,hjust=0.5),
-  axis.title.x = element_text(color="black", size=14),
-  axis.title.y = element_text(color="black", size=14)
-)
-a
 
 
 
 
+# Analyse bivariee prix et consommation -----------------------------------
 
-# Prix et prévision de consommation :
-#####################################
+
+# prix et prevision de la consommation
 
 h<-ggplot(prices2011,fill=Zonal_Price)+
   geom_line(mapping=aes(x=timestamp,y=Zonal_Price),colour='green')+
@@ -126,7 +142,7 @@ i<-ggplot(df_graph_2011) +
   geom_line(mapping = aes(x = date, y = values, color = type)) +
   ggtitle("Prix et consommation 2011")+
   scale_colour_brewer(name = "Légende",
-                    palette = "Dark2")
+                      palette = "Dark2")
 
 i+theme(
   plot.title = element_text(color="black", size=14,hjust=0.5),
@@ -181,6 +197,24 @@ j+theme(
 summary(prices2013$Zonal_Price)
 summary(prices2013$Forecasted_Zonal_Load/120)
 
+
+
+
+
+
+
+
+
+
+
+# Création dataframe5novembre:
+prices5nov2011 <- filter(prices,grepl(pattern='2011-11-05.',timestamp))
+prices5nov2012 <- filter(prices,grepl(pattern='2012-11-05.',timestamp))
+prices5nov2013 <- filter(prices,grepl(pattern='2013-11-05.',timestamp))
+prices5dec2013 <- filter(prices,grepl(pattern='2013-12-05.',timestamp)) # pour identifier un lundi et dimanche
+
+
+
 # Comparaison de prix au 5 novembre (arbitraire) : 
 ##################################################
 # Création du dataframe pour les 3 "5novembre"
@@ -203,19 +237,30 @@ j<-ggplot(df_graph_2012) +
 
 
 
-# Comparaison d'un dimanche et lundi : 
-
-ggplot(data = pdldec) +
-  geom_line(mapping = aes(x = hour, y = Zonal_Price, color = day)) +
-  scale_fill_brewer(name = "Opinion concernant\nl'état de l'envrionnement",
-                    palette = "Dark2")
-
-# Comparaison des prix sur les 3 années
 
 
 
 
 
-# test modif
-# test modif 2
+
+#### La petite analyse du bon Jerem : 
+#####################################
+
+
+
+
+
+
+# Evolution de la consommation pour chaque année : 
+g<-ggplot(prices2012)+
+  geom_line(mapping=aes(x=timestamp,y=Forecasted_Zonal_Load))+
+  ggtitle("Evolution de la consommation sur la période 2013")
+
+g + theme(
+  plot.title = element_text(color="black", size=14,hjust=0.5),
+  axis.title.x = element_text(color="black", size=14),
+  axis.title.y = element_text(color="black", size=14)
+)
+
+
 
