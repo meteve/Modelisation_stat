@@ -1,7 +1,7 @@
 
 library(tidyverse)
 library(lubridate)
-
+library(RColorBrewer)
 
 prices <- read_csv(file = "data/tidy_prices.csv")
 
@@ -140,6 +140,11 @@ g + theme(
   axis.title.y = element_text(color="black", size=14)
 )
 a
+
+
+
+
+
 # Prix et prévision de consommation :
 #####################################
 
@@ -154,9 +159,16 @@ h+theme(
   axis.title.y = element_text(color="black", size=14)
 )
 
+date <- rep(c(prices2011$timestamp), 2)
+type <- c(rep("price", nrow(prices2011)), rep("zonal_load", nrow(prices2011)))
+values <- c(prices2011$Zonal_Price, (prices2011$Forecasted_Zonal_Load)/120)
 
+df_graph_2011 <- tibble(values, type, date)
 
-
+ggplot(df_graph_2011) +
+  geom_line(mapping = aes(x = date, y = values, color = type)) +
+  scale_colour_brewer(name = "Coucou",
+                    palette = "Dark2")
 
 
 
@@ -182,7 +194,9 @@ ggplot(prices5nov2013)+
 # Comparaison d'un dimanche et lundi : 
 
 ggplot(data = pdldec) +
-  geom_line(mapping = aes(x = hour, y = Zonal_Price, color = day))
+  geom_line(mapping = aes(x = hour, y = Zonal_Price, color = day)) +
+  scale_fill_brewer(name = "Opinion concernant\nl'état de l'envrionnement",
+                    palette = "Dark2")
 
 
 
