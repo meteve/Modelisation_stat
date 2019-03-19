@@ -1,5 +1,7 @@
 
 library(tidyverse)
+library(lubridate)
+
 
 prices <- read_csv(file = "data/tidy_prices.csv")
 
@@ -96,8 +98,16 @@ ggplot(prices)+
 
 
 # Evolution du prix sur toute la période : 
-ggplot(prices)+
-  geom_point(mapping =aes(x = timestamp, y = Zonal_Price))
+a <- ggplot(prices)+
+  geom_line(mapping =aes(x = timestamp, y = Zonal_Price))+
+  ggtitle("Evolution du prix sur la période")
+
+a + theme(
+  plot.title = element_text(color="black", size=14,hjust=0.5),
+  axis.title.x = element_text(color="black", size=14),
+  axis.title.y = element_text(color="black", size=14)
+)
+
 
 # Evolution du prix pour chaque année :
 années=list(prices2011,prices2012,prices2013)
@@ -107,16 +117,53 @@ for(k in années){
   g
 }
 
-# Evolution de la consommation pour chaque année : 
-ggplot(prices2013)+
-  geom_point(mapping=aes(x=timestamp,y=Forecasted_Zonal_Load))
+d<-ggplot(prices2013)+
+  geom_line(mapping =aes(x = timestamp, y = Zonal_Price))+
+  ggtitle("Evolution du prix sur la période 2013")
 
+d + theme(
+  plot.title = element_text(color="black", size=14,hjust=0.5),
+  axis.title.x = element_text(color="black", size=14),
+  axis.title.y = element_text(color="black", size=14)
+)
+
+
+
+# Evolution de la consommation pour chaque année : 
+g<-ggplot(prices2012)+
+  geom_line(mapping=aes(x=timestamp,y=Forecasted_Zonal_Load))+
+  ggtitle("Evolution de la consommation sur la période 2013")
+
+g + theme(
+  plot.title = element_text(color="black", size=14,hjust=0.5),
+  axis.title.x = element_text(color="black", size=14),
+  axis.title.y = element_text(color="black", size=14)
+)
+a
 # Prix et prévision de consommation :
 #####################################
 
-ggplot(prices2013,fill=Zonal_Price)+
-  geom_point(mapping=aes(x=timestamp,y=Zonal_Price),colour='green')+
-  geom_point(mapping=aes(x=timestamp,y=Forecasted_Zonal_Load/120),colour='red')
+h<-ggplot(prices2011,fill=Zonal_Price)+
+  geom_line(mapping=aes(x=timestamp,y=Zonal_Price),colour='green')+
+  geom_line(mapping=aes(x=timestamp,y=Forecasted_Zonal_Load/120),colour='red')+
+  ggtitle("Comparaison Prix/Consommation 2011")
+
+h+theme(
+  plot.title = element_text(color="black", size=14,hjust=0.5),
+  axis.title.x = element_text(color="black", size=14),
+  axis.title.y = element_text(color="black", size=14)
+)
+
+
+
+
+
+
+
+
+summary(prices2011$Zonal_Price)
+summary(prices2011$Forecasted_Zonal_Load/120)
+
 # Pour avoir les autres années, on remplace le 2012
 
 # Scalage à la main (je tatonne sur le diviseur pour obtenir la même moyenne entre 
@@ -130,33 +177,13 @@ ggplot(prices5nov2013)+
   geom_line(mapping=aes(x=timestamp,y=Zonal_Price,colour='green'),colour='red')
 # Changer le 2013 pour les années
 
-# Comparaison d'un dimanche et lundi : 
-ggplot(pdldec)+
-  geom_line(mapping=aes(x=timestamp,y=Zonal_Price),colour='red')
 
+
+# Comparaison d'un dimanche et lundi : 
 
 ggplot(data = pdldec) +
-  geom_line(mapping = aes(x = timestamp[1:24], y = Zonal_Price[1:24]))
+  geom_line(mapping = aes(x = hour, y = Zonal_Price, color = day))
 
-pdldec_d <- pdldec[1:24,]
-pdldec_l <- pdldec[25:48,]
-
-pdldec_d$Type = "Dimanche"
-pdldec_l$Type = "Lundi"
-
-df1 = data.frame(Value = c(2,3,4,5),
-                 Frequency = c(1,7,19,9),
-                 Percentage = c(2.77,19.44,52.77,25))
-df2 = data.frame(Value = c(1,2,3,4,5),
-                 Frequency = c(2,3,8,20,20),
-                 Percentage = c(3.77,5.66,15.09,37.73,37.73))
-
-df1$Type = "A"
-df2$Type = "B"
-
-dfw = rbind(df1,df2)
-
-ggplot(data = dfw, aes(x = Value, y = Percentage, color = Type)) + geom_line()
 
 
 
