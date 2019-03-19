@@ -1,4 +1,3 @@
-
 library(tidyverse)
 library(mgcv)
 library(lubridate)
@@ -6,23 +5,23 @@ library(fastDummies)
 
 #rm(list=ls())
 
-
+#
 
 # IMPORTATION DES DONNEES -------------------------------------------------
 
 
 # importer en convertissant directement en format 'datetime' la deuxieme colonne
 prices <- read_delim("data/prices.csv", delim = ";",
-                   col_types = cols('timestamp' = 
-                                      col_datetime("%m%d%Y %H:%M")))
+                     col_types = cols('timestamp' = 
+                                        col_datetime("%m%d%Y %H:%M")))
 
 
 
 # on remplace les espaces par des underscore dans les noms de colonnes
 prices <- rename(prices, ZONEID = ZONEID, timestamp = timestamp,
-               Forecasted_Total_Load = `Forecasted Total Load`,
-               Forecasted_Zonal_Load = `Forecasted Zonal Load`,
-               Zonal_Price = `Zonal Price`)
+                 Forecasted_Total_Load = Forecasted Total Load,
+                 Forecasted_Zonal_Load = Forecasted Zonal Load,
+                 Zonal_Price = Zonal Price)
 
 
 
@@ -56,7 +55,7 @@ prices$prev_day_price <- c(previous_day_price_NA, previous_day_price)
 ### Prix à deux jours avant : 
 
 previous_day2_price <- apply(as.matrix(49:nrow(prices)), 1,
-                            function(i){prices$Zonal_Price[(i-48)]})
+                             function(i){prices$Zonal_Price[(i-48)]})
 previous_day2_price_NA <- rep(NA, 48)
 
 prices$prev_day2_price <- c(previous_day2_price_NA, previous_day2_price)
@@ -67,7 +66,7 @@ prices$prev_day2_price <- c(previous_day2_price_NA, previous_day2_price)
 ###################################
 
 previous_week_price <- apply(as.matrix(169:nrow(prices)), 1,
-                            function(i){prices$Zonal_Price[(i-168)]})
+                             function(i){prices$Zonal_Price[(i-168)]})
 previous_week_price_NA <- rep(NA, 168)
 
 prices$prev_week_price <- c(previous_week_price_NA, previous_week_price)
@@ -94,7 +93,7 @@ prices$max_prices<-c(max_prices_NA,max_prices)
 
 prices <- dummy_cols(prices, select_columns = 'day')
 
-
+year(prices$timestamp[1])
 #### dummies heure de la journee
 
 prices$hour <- hour(prices$timestamp)
@@ -108,6 +107,13 @@ summary(prices$samedi) # on a bien 1/7 ème de samedis dans la base
 summary(prices$dimanche) # on a bien 1/7 ème de dimanches dans la base
 prices$weekend<-(prices$samedi + prices$dimanche)
 summary(prices$weekend) # tout est ok
+
+
+
+### dummies pour l'annee
+prices$year <- year(prices$timestamp)
+prices <- dummy_cols(prices, select_columns = 'year')
+
 
 #### load au carré (Total Load)
 
@@ -134,8 +140,3 @@ prices
 # EXPORTER DONNEES --------------------------------------------------------
 
 write_csv(prices, "data/tidy_prices.csv")
-
-
-
-
-
