@@ -2,6 +2,7 @@
 library(tidyverse)
 library(lubridate)
 library(RColorBrewer)
+library(gridExtra)
 
 prices <- read_csv(file = "data/tidy_prices.csv")
 
@@ -58,11 +59,17 @@ plot_price_week <- function(date){
   index <- which(prices$timestamp == date)
   prices_week <- prices[index:(index+168),]
   p <- ggplot(prices_week) +
-    geom_line(mapping = aes(x = timestamp, y = Zonal_Price))
+    geom_line(mapping = aes(x = timestamp, y = Zonal_Price)) +
+    xlab("") + ylab("Prix dans la zone étudiée")
   return(p)
 }
 
 #plot des premieres semaines de chaque mois de 2013
+
+grid.arrange(plot_price_week('2013-01-07'), plot_price_week('2013-03-04'),
+             plot_price_week('2013-05-06'), plot_price_week('2013-07-01'),
+             plot_price_week('2013-09-02'), plot_price_week('2013-11-04'),
+             nrow = 3, ncol = 2)
 
 plot_price_week('2013-01-07') #janvier
 plot_price_week('2013-02-04') #fevrier
