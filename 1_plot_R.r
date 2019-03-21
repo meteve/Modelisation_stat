@@ -48,6 +48,28 @@ ggplot(data = prices2013) +
   xlab("") + ylab("Prix dans la zone étudiée")
 
 
+# PAR MOIS
+
+plot_price_month <- function(date){
+  index <- which(prices$timestamp == date)
+  prices_month <- prices[index:(index+720),]
+  p <- ggplot(prices_month) +
+    geom_line(mapping = aes(x = timestamp, y = Zonal_Price)) +
+    xlab("") + ylab("Prix dans la zone étudiée")
+  return(p)
+}
+
+
+plot_price_month('2011-01-02')
+plot_price_month('2011-03-01')
+plot_price_month('2011-06-02')
+plot_price_month('2011-07-02')
+plot_price_month('2011-08-02')
+
+
+
+
+
 
 
 # PAR SEMAINE
@@ -71,23 +93,41 @@ grid.arrange(plot_price_week('2013-01-07'), plot_price_week('2013-03-04'),
              plot_price_week('2013-09-02'), plot_price_week('2013-11-04'),
              nrow = 3, ncol = 2)
 
-plot_price_week('2013-01-07') #janvier
-plot_price_week('2013-02-04') #fevrier
-plot_price_week('2013-03-04') #mars
-plot_price_week('2013-04-01') #avril
-plot_price_week('2013-05-06') #mai
-plot_price_week('2013-06-03') #juin
-plot_price_week('2013-07-01') #juillet
-plot_price_week('2013-08-05') #aout
-plot_price_week('2013-09-02') #septembre
-plot_price_week('2013-10-07') #octobre
-plot_price_week('2013-11-04') #novembre
-plot_price_week('2013-12-02') #decembre
+
+
+
 
 
 
 
 # PAR JOUR
+
+plot_price_day <- function(date){
+  index <- which(prices$timestamp == date) +1
+  prices_day <- prices[index:(index+23),]
+  p <- ggplot(prices_day) +
+    geom_line(mapping = aes(x = timestamp, y = Zonal_Price)) +
+    ylab("Prix dans la zone étudiée") + xlab("")
+  return(p)
+}
+
+plot_price_day('2013-01-08')
+
+grid.arrange(plot_price_day('2013-01-08'), plot_price_day('2013-03-05'),
+             plot_price_day('2013-05-07'), plot_price_day('2013-07-02'),
+             plot_price_day('2013-09-03'), plot_price_day('2013-11-05'),
+             nrow = 3, ncol = 2)
+
+scale_x_discrete(name = date, labels = c('00:00', '01:00', '02:00',
+                                         '03:00', '04:00', '05:00',
+                                         '06:00', '07:00', '08:00',
+                                         '09:00', '10:00', '11:00',
+                                         '12:00', '13:00', '14:00',
+                                         '15:00', '16:00', '17:00',
+                                         '18:00', '19:00', '20:00',
+                                         '21:00', '22:00', '23:00'),
+                 breaks = c(prices_day$timestamp))
+
 
 # Création dataframe d'un dimanche et d'un lundi de décembre pour comparer
 prices8dec2013 <- filter(prices,grepl(pattern='2013-12-08.',timestamp)) # un dimanche
