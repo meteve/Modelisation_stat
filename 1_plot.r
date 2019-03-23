@@ -167,82 +167,64 @@ ggplot(prices)+
 
 # prix et prevision de la consommation
 
-h<-ggplot(prices2011,fill=Zonal_Price)+
-  geom_line(mapping=aes(x=timestamp,y=Zonal_Price),colour='green')+
-  geom_line(mapping=aes(x=timestamp,y=Forecasted_Zonal_Load/120),colour='red')+
-  ggtitle("Comparaison Prix/Consommation 2011")
+# on cree le tibble adapte pour les graphiques de superposition de la demande et du prix
+date <- rep(c(prices$timestamp), 2)
+type <- c(rep("price", nrow(prices)), rep("zonal_load", nrow(prices)))
 
-h+theme(
-  plot.title = element_text(color="black", size=14,hjust=0.5),
-  axis.title.x = element_text(color="black", size=14),
-  axis.title.y = element_text(color="black", size=14)
-)
+# on centre et reduit les vecteurs de prix et de consommation pour les comparer
+Zonal_Price_sd = (prices$Zonal_Price - mean(prices$Zonal_Price))/sd(prices$Zonal_Price)
+Forecasted_Zonal_Load_sd = (prices$Forecasted_Zonal_Load - mean(prices$Forecasted_Zonal_Load))/sd(prices$Forecasted_Zonal_Load)
+
+values <- c(Zonal_Price_sd, Forecasted_Zonal_Load_sd)
+df_graph <- tibble(date, type, values)
+
+# graph des prix et de la conso sur toute la periode
+ggplot(df_graph) +
+  geom_line(mapping = aes(x = date, y = values, color = type), alpha = 0.5) +
+  scale_color_manual(labels = c("Prix dans la zone",
+                                  "Consommation prédite\ndans la zone"),
+                     values = c("black", "deepskyblue"),
+                     name = "") +
+  theme_bw() +
+  xlab("") + ylab("Prix et consommation prédite (valeurs centrées réduites)")
+
 
 # 2011
-date <- rep(c(prices2011$timestamp), 2)
-type <- c(rep("price", nrow(prices2011)), rep("zonal_load", nrow(prices2011)))
-values <- c(prices2011$Zonal_Price, (prices2011$Forecasted_Zonal_Load)/120)
-
-df_graph_2011 <- tibble(values, type, date)
-
-i<-ggplot(df_graph_2011) +
-  geom_line(mapping = aes(x = date, y = values, color = type)) +
-  ggtitle("Prix et consommation 2011")+
-  scale_colour_brewer(name = "Légende",
-                      palette = "Dark2")
-
-i+theme(
-  plot.title = element_text(color="black", size=14,hjust=0.5),
-  axis.title.x = element_text(color="black", size=14),
-  axis.title.y = element_text(color="black", size=14)
-)
+df_graph %>%
+  filter(grepl('2011.', date)) %>% 
+  ggplot() +
+  geom_line(mapping = aes(x = date, y = values, color = type), alpha = 0.5) +
+  scale_color_manual(labels = c("Prix dans la zone",
+                                "Consommation prédite\ndans la zone"),
+                     values = c("black", "deepskyblue"),
+                     name = "") +
+  theme_bw() +
+  xlab("") + ylab("Prix et consommation prédite (valeurs centrées réduites)")
 
 # 2012
-date <- rep(c(prices2012$timestamp), 2)
-type <- c(rep("price", nrow(prices2012)), rep("zonal_load", nrow(prices2012)))
-values <- c(prices2012$Zonal_Price, (prices2012$Forecasted_Zonal_Load)/150)
-
-df_graph_2012 <- tibble(values, type, date)
-
-j<-ggplot(df_graph_2012) +
-  geom_line(mapping = aes(x = date, y = values, color = type)) +
-  ggtitle("Prix et consommation 2012")+
-  scale_colour_brewer(name = "Légende",
-                      palette = "Dark2")
-
-j+theme(
-  plot.title = element_text(color="black", size=14,hjust=0.5),
-  axis.title.x = element_text(color="black", size=14),
-  axis.title.y = element_text(color="black", size=14)
-)
+df_graph %>%
+  filter(grepl('2012.', date)) %>% 
+  ggplot() +
+  geom_line(mapping = aes(x = date, y = values, color = type), alpha = 0.5) +
+  scale_color_manual(labels = c("Prix dans la zone",
+                                "Consommation prédite\ndans la zone"),
+                     values = c("black", "deepskyblue"),
+                     name = "") +
+  theme_bw() +
+  xlab("") + ylab("Prix et consommation prédite (valeurs centrées réduites)")
 
 
 # 2013
-date <- rep(c(prices2013$timestamp), 2)
-type <- c(rep("price", nrow(prices2013)), rep("zonal_load", nrow(prices2013)))
-values <- c(prices2013$Zonal_Price, (prices2013$Forecasted_Zonal_Load)/120)
-
-df_graph_2013 <- tibble(values, type, date)
-
-j<-ggplot(df_graph_2013) +
-  geom_line(mapping = aes(x = date, y = values, color = type)) +
-  ggtitle("Prix et consommation 2013")+
-  scale_colour_brewer(name = "Légende",
-                      palette = "Dark2")
-
-j+theme(
-  plot.title = element_text(color="black", size=14,hjust=0.5),
-  axis.title.x = element_text(color="black", size=14),
-  axis.title.y = element_text(color="black", size=14)
-)
-
-
-# Pour avoir les autres années, on remplace le 2012
-
-# Scalage à la main (je tatonne sur le diviseur pour obtenir la même moyenne entre 
-# le prix et la prévision de consommation --> donc un diviseur propre à chaque année) 
-summary(prices2013$Zonal_Price)
-summary(prices2013$Forecasted_Zonal_Load/120)
+df_graph %>%
+  filter(grepl('2013.', date)) %>% 
+  ggplot() +
+  geom_line(mapping = aes(x = date, y = values, color = type), alpha = 0.5) +
+  scale_color_manual(labels = c("Prix dans la zone",
+                                "Consommation prédite\ndans la zone"),
+                     values = c("black", "deepskyblue"),
+                     name = "") +
+  theme_bw() +
+  xlab("") + ylab("Prix et consommation prédite (valeurs centrées réduites)")
 
 
 
@@ -254,6 +236,19 @@ summary(prices2013$Forecasted_Zonal_Load/120)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+# JEREM A TRIER !
 # Création dataframe5novembre:
 prices5nov2011 <- filter(prices,grepl(pattern='2011-11-05.',timestamp))
 prices5nov2012 <- filter(prices,grepl(pattern='2012-11-05.',timestamp))
