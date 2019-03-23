@@ -31,20 +31,46 @@ prices <- rename(prices, ZONEID = ZONEID, timestamp = timestamp,
 
 # CREATION DE VARIABLES ---------------------------------------------------
 
-#### jour de la semaine
+############## DUMMIES
 
+# dummies pour l'annee
+prices$year <- year(prices$timestamp)
+prices <- dummy_cols(prices, select_columns = 'year')
+
+
+# dummies pour le mois
+prices$month <- month(prices$timestamp)
+prices <- dummy_cols(prices, select_columns = 'month')
+
+
+# dummies pour le jour
 prices <- prices %>%
   mutate(day = weekdays(as.Date(timestamp)))
 
 prices$day <- tolower(prices$day)
 
+prices <- dummy_cols(prices, select_columns = 'day')
 
-prices$day_num <- as.numeric(as.factor(prices$day))
+
+# dummies pour le week-end 
+prices$samedi<-as.numeric(prices$day_samedi==1)
+prices$dimanche<-as.numeric(prices$day_dimanche==1)
+prices$weekend<-(prices$samedi + prices$dimanche)
 
 
-#### prix a la journee precedente :
-###################################
+# dummies pour l'heure
+prices$hour <- hour(prices$timestamp)
+prices <- dummy_cols(prices, select_columns = 'hour')
 
+
+
+
+
+
+
+############## AUTRES
+
+# prix a la journee precedente 
 previous_day_price <- apply(as.matrix(25:nrow(prices)), 1,
                             function(i){prices$Zonal_Price[(i-24)]})
 previous_day_price_NA <- rep(NA, 24)
@@ -52,8 +78,7 @@ previous_day_price_NA <- rep(NA, 24)
 prices$prev_day_price <- c(previous_day_price_NA, previous_day_price)
 
 
-### Prix à deux jours avant : 
-
+# prix à deux jours avant 
 previous_day2_price <- apply(as.matrix(49:nrow(prices)), 1,
                              function(i){prices$Zonal_Price[(i-48)]})
 previous_day2_price_NA <- rep(NA, 48)
@@ -61,19 +86,15 @@ previous_day2_price_NA <- rep(NA, 48)
 prices$prev_day2_price <- c(previous_day2_price_NA, previous_day2_price)
 
 
-
-#### prix a la semaine precedente : 
-###################################
-
+# prix a la semaine precedente
 previous_week_price <- apply(as.matrix(169:nrow(prices)), 1,
                              function(i){prices$Zonal_Price[(i-168)]})
 previous_week_price_NA <- rep(NA, 168)
 
 prices$prev_week_price <- c(previous_week_price_NA, previous_week_price)
 
-#### prix minimum des 24h précédentes :
-######################################
 
+# prix minimum des 24h précédentes
 Min_Price <- apply(as.matrix(25:nrow(prices)), 1,
                    function(i){min(prices$Zonal_Price[(i-24):i])})
 Min_Price_NA <- rep(NA, 24)
@@ -81,57 +102,27 @@ Min_Price_NA <- rep(NA, 24)
 prices$Min_Price <- c(Min_Price_NA, Min_Price)
 
 
-### prix maximum des 24h précédentes :
-######################################
+# prix maximum des 24h précédentes
+Max_price <- apply(as.matrix(25:nrow(prices)), 1,
+                   function(i){max(prices$Zonal_Price[(i-24):i])})
+Max_price_NA<-rep(NA,24)
 
-max_prices <- apply(as.matrix(25:nrow(prices)),1,function(i){max(prices$Zonal_Price[(i-24):i])})
-max_prices_NA<-rep(NA,24)
-prices$max_prices<-c(max_prices_NA,max_prices)
-
-
-#### dummies jour de la semaine
-
-prices <- dummy_cols(prices, select_columns = 'day')
-
-year(prices$timestamp[1])
-#### dummies heure de la journee
-
-prices$hour <- hour(prices$timestamp)
-prices <- dummy_cols(prices, select_columns = 'hour')
-
-### dummies pour le week-end 
-#############################
-prices$samedi<-as.numeric(prices$day_samedi==1)
-prices$dimanche<-as.numeric(prices$day_dimanche==1)
-summary(prices$samedi) # on a bien 1/7 ème de samedis dans la base
-summary(prices$dimanche) # on a bien 1/7 ème de dimanches dans la base
-prices$weekend<-(prices$samedi + prices$dimanche)
-summary(prices$weekend) # tout est ok
+prices$Max_price<-c(Max_price_NA, Max_price)
 
 
-
-### dummies pour l'annee
-prices$year <- year(prices$timestamp)
-prices <- dummy_cols(prices, select_columns = 'year')
-
-
-#### load au carré (Total Load)
-
+# load au carré (Total Load)
 prices$sqrtotalload <- (prices$Forecasted_Total_Load)^2
 
-#### load au carré (Zonal Load)
-
+# load au carré (Zonal Load)
 prices$sqrzonalload <- (prices$Forecasted_Zonal_Load)^2
 
-#### load au cube (Total Load)
-
+# load au cube (Total Load)
 prices$cubtotalload <- (prices$Forecasted_Total_Load)^3
 
-#### load au cube (Zonal Load)
-
+# load au cube (Zonal Load)
 prices$cubzonalload <- (prices$Forecasted_Zonal_Load)^3
 
-prices
+
 
 
 
