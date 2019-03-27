@@ -31,7 +31,9 @@ acf(prices_desaiso) # autocorrelations??
 
 
 
-
+prices$daynum=as.integer(factor(prices$day, levels = c("lundi", "mardi", "mercredi","jeudi","vendredi","samedi","dimanche"))
+prices$daynum=daynum
+                         
 
 
 
@@ -57,3 +59,9 @@ summary(zebi4)
 
 
 class(prices$day)
+
+
+
+
+prices$daynum=as.integer(factor(prices$day, levels = c("lundi", "mardi", "mercredi","jeudi","vendredi","samedi","dimanche")))              
+
