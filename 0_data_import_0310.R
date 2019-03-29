@@ -122,7 +122,8 @@ prices$cubtotalload <- (prices$Forecasted_Total_Load)^3
 # load au cube (Zonal Load)
 prices$cubzonalload <- (prices$Forecasted_Zonal_Load)^3
 
-
+# Association d'une valeur numérique à chaque jour de la semaine
+prices$daynum=as.integer(factor(prices$day, levels = c("lundi", "mardi", "mercredi","jeudi","vendredi","samedi","dimanche"))
 
 
 
