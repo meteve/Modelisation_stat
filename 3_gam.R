@@ -27,11 +27,12 @@ prices$daynum=as.integer(factor(prices$day, levels = c("lundi", "mardi", "mercre
                         
 gam_1 <- gam(formula = Zonal_Price ~ s(daynum,k=7,bs="cc") + s(prev_day_price,k=50,bs="tp") + s(prev_week_price,k=50,bs="tp") +
                s(Min_Price,k=50,bs="tp")+ s(Max_price,k=50,bs="tp")+s(sqrzonalload,k=50,bs="tp")+
-               s(cubzonalload,k=100,bs="tp"), data = prices[169:nrow(prices),])
+               s(Forecasted_Zonal_Load) +s(cubzonalload,k=100,bs="tp"), data = prices[169:nrow(prices),])
 
 names(gam_1)
 summary(gam_1)
 plot(gam_1)
+
 
 # On bloque à 88%, il manque surement des variables
 # Créer une variable qui va de 1 à 12 pour les mois et rajouter ca dans le modèle avec bs="cc"
