@@ -33,7 +33,6 @@ plot_prices_total
 prices2011 <- filter(prices, grepl(pattern = '2011.', timestamp))
 prices2012 <- filter(prices, grepl(pattern = '2012.', timestamp))
 prices2013 <- filter(prices, grepl(pattern = '2013.', timestamp))
-prices2013 <- filter(prices, grepl(pattern = '2013.', timestamp))
 
 
 

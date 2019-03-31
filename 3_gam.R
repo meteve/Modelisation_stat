@@ -23,7 +23,7 @@ pacf(prices$Zonal_Price,lag.max=10)
 # plot(gam) donne des plots pour les effets NON LINEAIRES
 
 # On crée la variable catégorielle 
-prices$daynum=as.integer(factor(prices$day, levels = c("lundi", "mardi", "mercredi","jeudi","vendredi","samedi","dimanche"))
+prices$daynum=as.integer(factor(prices$day, levels = c("lundi", "mardi", "mercredi","jeudi","vendredi","samedi","dimanche")))
                         
 gam_1 <- gam(formula = Zonal_Price ~ s(daynum,k=7,bs="cc") + s(prev_day_price,k=50,bs="tp") + s(prev_week_price,k=50,bs="tp") +
                s(Min_Price,k=50,bs="tp")+ s(Max_price,k=50,bs="tp")+s(sqrzonalload,k=50,bs="tp")+
@@ -32,6 +32,7 @@ gam_1 <- gam(formula = Zonal_Price ~ s(daynum,k=7,bs="cc") + s(prev_day_price,k=
 names(gam_1)
 summary(gam_1)
 plot(gam_1)
+
 
 
 # On bloque à 88%, il manque surement des variables
