@@ -23,7 +23,7 @@ pacf(prices$Zonal_Price,lag.max=10)
 # plot(gam) donne des plots pour les effets NON LINEAIRES
 
 # On crée la variable catégorielle 
-prices$daynum=as.integer(factor(prices$day, levels = c("lundi", "mardi", "mercredi","jeudi","vendredi","samedi","dimanche")))
+#prices$daynum = as.integer(factor(prices$day, levels = c("lundi", "mardi", "mercredi","jeudi","vendredi","samedi","dimanche")))
                         
 gam_1 <- gam(formula = Zonal_Price ~ s(daynum,k=7,bs="cc") + s(prev_day_price,k=50,bs="tp") + s(prev_week_price,k=50,bs="tp") +
                s(Min_Price,k=50,bs="tp")+ s(Max_price,k=50,bs="tp")+s(sqrzonalload,k=50,bs="tp")+
@@ -34,24 +34,47 @@ summary(gam_1)
 plot(gam_1)
 
 
-
-# On bloque à 88%, il manque surement des variables
-# Créer une variable qui va de 1 à 12 pour les mois et rajouter ca dans le modèle avec bs="cc"
-# idem pour les heures
-
-# Ensuite il faudra splitter la base en une base d'entrainement et une de test
-# Et faire un test
+prices$numyear <- as.factor(prices$year)
+levels(prices$numyear) <- c('1', '2', '3')
+prices$numyear <- as.numeric(prices$numyear)
+table(prices$numyear)
 
 
-
-
-gam_2 <- gam(formula = Zonal_Price ~ day + s(prev_day_price) + s(prev_week_price) +
-               s(Min_Price)+ s(Max_price)+s(sqrzonalload)+
-               s(cubzonalload), data = prices[169:nrow(prices),])
-
-plot(gam_2)
+#on ajoute des variables
+gam_2 <- gam(formula = Zonal_Price ~ s(daynum,k=7,bs="cc") + s(month,k=12,bs='cc') +
+               s(prev_day_price,k=50,bs="tp") + s(hour, k=24, bs='cc') +
+               s(prev_week_price,k=50,bs="tp") + s(Min_Price,k=50,bs="tp")+
+               s(Max_price,k=50,bs="tp") + s(sqrzonalload,k=50,bs="tp") + 
+               s(Forecasted_Zonal_Load) + s(cubzonalload,k=100,bs="tp") +
+               s(Forecasted_Total_Load) + s(sqrtotalload,k=50,bs="tp") +
+               s(cubtotalload,k=100,bs="tp"), 
+             data = prices[169:nrow(prices),])
 
 
 summary(gam_2)
+gam.check(gam_2)
+
+# en changeant les degres de liberte
+gam_3 <- gam(formula = Zonal_Price ~ s(daynum,k=7,bs="cc") + s(month,k=12,bs='cc') +
+               s(prev_day_price,k=50,bs="tp") + s(hour, k=24, bs='cc') +
+               s(prev_week_price,k=50,bs="tp") + s(Min_Price,k=50,bs="tp")+
+               s(Max_price,k=50,bs="tp") + s(sqrzonalload,k=50,bs="tp") + 
+               s(Forecasted_Zonal_Load, bs="tp") + s(cubzonalload,k=100,bs="tp") +
+               s(Forecasted_Total_Load, bs="tp") + s(sqrtotalload,k=50,bs="tp") +
+               s(cubtotalload,k=100,bs="tp"), 
+             data = prices[169:nrow(prices),])
+
+summary(gam_3)
+
+gam.check(gam_3)
+
+
+#creer le vecteur des prix a predire
+
+prev <- predict(gam_3, newprices)
+
+
+
+
 
 
