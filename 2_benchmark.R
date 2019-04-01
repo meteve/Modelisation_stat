@@ -184,3 +184,12 @@ abline(0,1)
 yhat = predict(arbre, newdata = xtest)
 sqrt(mean((yhat-ytest)^2))
 # RMSE de 13,64
+
+### Random Forest : 
+library(randomForest)
+r=randomForest(formula= ytrain~.,data=xtrain,ntree=200)
+plot(r)
+yhatrf=predict(r,newdata=xtest)
+sqrt(mean((yhatrf-ytest)^2)) # RMSE à 10 en gros ...
+importance(r)
+varImpPlot(r)
