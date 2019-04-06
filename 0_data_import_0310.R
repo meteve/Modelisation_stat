@@ -130,7 +130,7 @@ date_pred <- c('2013-06-06', '2013-06-17', '2013-06-24', '2013-07-04',
 list_df_pred <- lapply(date_pred, get_df_pred)
 #dataframe des dates a predire
 df_pred <- ldply(list_df_pred)
-
+head(df_pred)
 
 # EXPORTER DONNEES --------------------------------------------------------
 
