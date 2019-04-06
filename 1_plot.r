@@ -1,4 +1,3 @@
-
 library(tidyverse)
 library(lubridate)
 library(RColorBrewer)
@@ -6,16 +5,11 @@ library(gridExtra)
 
 prices <- read_csv(file = "data/tidy_prices.csv")
 
-
-
-
-
-
 # Analyse univariee du prix -----------------------------------------------
 
 
 
-# SUR TOUTE LA PERIODE 
+#### SUR TOUTE LA PERIODE ####
 
 plot_prices_total <- ggplot(data = prices) +
   geom_line(mapping =aes(x = timestamp, y = Zonal_Price)) +
@@ -26,31 +20,25 @@ plot_prices_total <- ggplot(data = prices) +
 
 plot_prices_total
 
+### PAR ANNEE
 
-
-
-# PAR ANNEE
-prices2011 <- filter(prices, grepl(pattern = '2011.', timestamp))
-prices2012 <- filter(prices, grepl(pattern = '2012.', timestamp))
-prices2013 <- filter(prices, grepl(pattern = '2013.', timestamp))
-
-
-
-
+# 2011
 ggplot(data = prices2011) +
   geom_line(mapping =aes(x = timestamp, y = Zonal_Price)) +
   xlab("") + ylab("Prix dans la zone étudiée")
 
+# 2012
 ggplot(data = prices2012) +
   geom_line(mapping =aes(x = timestamp, y = Zonal_Price)) +
   xlab("") + ylab("Prix dans la zone étudiée")
 
+# 2013
 ggplot(data = prices2013) +
   geom_line(mapping =aes(x = timestamp, y = Zonal_Price)) +
   xlab("") + ylab("Prix dans la zone étudiée")
 
 
-# PAR MOIS
+### PAR MOIS
 
 plot_price_month <- function(date){
   index <- which(prices$timestamp == date)
@@ -68,15 +56,9 @@ plot_price_month('2011-06-02')
 plot_price_month('2011-07-02')
 plot_price_month('2011-08-02')
 
+### PAR SEMAINE
 
-
-
-
-
-
-# PAR SEMAINE
-
-# fonction qui plot les prix pour une semaine donnee
+# Fonction qui plot les prix pour une semaine donnée
 # prend comme argument la date d'un jour et plot les prix sur la semaine
 
 plot_price_week <- function(date){
@@ -95,14 +77,7 @@ grid.arrange(plot_price_week('2013-01-07'), plot_price_week('2013-03-04'),
              plot_price_week('2013-09-02'), plot_price_week('2013-11-04'),
              nrow = 3, ncol = 2)
 
-
-
-
-
-
-
-
-# PAR JOUR
+### PAR JOUR
 
 plot_price_day <- function(date){
   index <- which(prices$timestamp == date) +1
@@ -130,7 +105,6 @@ scale_x_discrete(name = date, labels = c('00:00', '01:00', '02:00',
                                          '21:00', '22:00', '23:00'),
                  breaks = c(prices_day$timestamp))
 
-
 # Création dataframe d'un dimanche et d'un lundi de décembre pour comparer
 prices8dec2013 <- filter(prices,grepl(pattern='2013-12-08.',timestamp)) # un dimanche
 prices9dec2013 <- filter(prices,grepl(pattern='2013-12-09.',timestamp)) # un lundi
@@ -139,7 +113,7 @@ pdldec=rbind(prices8dec2013,prices9dec2013)
 
 
 
-# Comparaison d'un dimanche et lundi : 
+### Comparaison d'un dimanche et lundi (8 et 9 décembre 2013) 
 
 ggplot(data = pdldec) +
   geom_line(mapping = aes(x = hour, y = Zonal_Price, color = day)) +
@@ -147,8 +121,7 @@ ggplot(data = pdldec) +
                     palette = "Dark2")
 
 
-
-# Prix en fonction des prix passés
+### Prix en fonction des prix passés
 
 ggplot(prices)+
   geom_point(mapping = aes(x = Zonal_Price, y = prev_day_price))
