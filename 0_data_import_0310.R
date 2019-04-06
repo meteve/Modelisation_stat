@@ -105,6 +105,12 @@ prices$daynum <- as.integer(factor(prices$day,
                                    levels = c("lundi", "mardi", "mercredi",
                                               "jeudi","vendredi","samedi","dimanche")))
 
+#### Création de bases de données par année : ####
+prices2011 <- filter(prices, grepl(pattern = '2011.', timestamp))
+prices2012 <- filter(prices, grepl(pattern = '2012.', timestamp))
+prices2013 <- filter(prices, grepl(pattern = '2013.', timestamp))
+
+
 # EXPORTER DONNEES --------------------------------------------------------
 
 write_csv(prices, "data/tidy_prices.csv")
