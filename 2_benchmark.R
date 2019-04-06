@@ -8,6 +8,7 @@ library(tree)
 library(glmnet)
 
 prices <- read_csv(file = "data/tidy_prices.csv")
+df_pred <- read_csv(file = "data/df_pred.csv")
 
 
 
