@@ -8,7 +8,6 @@ prices <- read_csv(file = "data/tidy_prices.csv")
 # Analyse univariee du prix -----------------------------------------------
 
 
-
 #### SUR TOUTE LA PERIODE ####
 
 plot_prices_total <- ggplot(data = prices) +

@@ -193,3 +193,20 @@ yhatrf=predict(r,newdata=xtest)
 sqrt(mean((yhatrf-ytest)^2)) # RMSE à 10 en gros ...
 importance(r)
 varImpPlot(r)
+
+
+
+### AR ###
+##########
+
+#cf article Serinaldi
+
+AR.1 <- lm(Zonal_Price ~ prev_day_price + prev_day2_price + prev_week_price +
+             Min_Price + day_lundi + day_samedi + day_dimanche,
+           data = prices[169:nrow(prices),])
+
+summary(AR.1)
+
+
+
+
