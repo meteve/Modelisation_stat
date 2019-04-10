@@ -113,9 +113,13 @@ write_csv(df_gam_err, "data/df_gam_err.csv")
 write_csv(df_gam_pred, "data/df_gam_pred.csv")
 
 
-df_gam_err <- read_csv(file = "data/df_gam_err.csv")
+df_gam_err <- read_csv(file = "data/df_gam_err.csv",
+                       col_types = cols(col_character(), col_double(),
+                                        col_double(), col_double()))
+
 df_gam_pred <- read_csv(file = "data/df_gam_pred.csv")
 
+
 stargazer(df_gam_err, summary = FALSE)
-stargazer(df_gam_pred, summary = FALSE)
+stargazer(round(df_gam_pred, 2), summary = FALSE)
 
