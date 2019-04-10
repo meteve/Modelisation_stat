@@ -81,7 +81,7 @@ get_mae <- function(y,yhat){
 
 get_gam <- function(date){
   index <- which(grepl(pattern = date, prices$timestamp))[1]
-  gam <- gam(formula = Zonal_Price ~ s(daynum,k=7,bs="cc") + s(month,k=12,bs='cc') +
+  gam_date <- gam(formula = Zonal_Price ~ s(daynum,k=7,bs="cc") + s(month,k=12,bs='cc') +
                        s(prev_day_price,k=50,bs="tp") + s(hour, k=24, bs='cc') +
                        s(prev_week_price,k=50,bs="tp") + s(Min_Price,k=50,bs="tp")+
                        s(Max_price,k=50,bs="tp") + s(sqrzonalload,k=50,bs="tp") +
@@ -89,16 +89,31 @@ get_gam <- function(date){
                        s(Forecasted_Total_Load, bs="tp") + s(sqrtotalload,k=50,bs="tp") +
                        s(cubtotalload,k=100,bs="tp"),
                      data = prices[169:(index-1),])
-  pred <- predict(gam, newdata = filter(df_pred, grepl(pattern = date, prices$timestamp)))
+  pred <- predict(gam_date, newdata = filter(df_pred, grepl(pattern = date, df_pred$timestamp)))
   y <- filter(prices, grepl(pattern = date, prices$timestamp))$Zonal_Price
   rmse <- get_rmse(y = y, yhat = pred)
   mae <- get_mae(y = y, yhat = pred)
-  #return('gam' = gam, 'pred' = pred, 'rmse' = rmse, 'mae' = mae)
+  result <- c('gam_date' = gam_date, 'pred' = pred, 'rmse' = rmse, 'mae' = mae)
+  return(result)
 }
 
 
-get_gam(date = '2013-06-06')
+#gam_130606 <- get_gam(date = '2013-06-06')
+
+
+#appliquons cette fonction a toutes les dates que nous devons predire
+
+date_pred <- c('2013-06-06', '2013-06-17', '2013-06-24', '2013-07-04',
+               '2013-07-09', '2013-07-13', '2013-07-16', '2013-07-18',
+               '2013-07-19', '2013-07-20', '2013-07-24', '2013-07-25',
+               '2013-12-06', '2013-12-07', '2013-12-17')
+
+gam_pred <- paste0('gam_', date_pred)
+gam_pred <- gsub("-", "", gam_pred)
 
 
 
+for (i in (1:length(date_pred))){
+  gam_pred[i] <- get_gam(date_pred[i])
+}
 
