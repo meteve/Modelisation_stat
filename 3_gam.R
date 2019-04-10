@@ -31,16 +31,16 @@ df_pred <- read_csv(file = "data/df_pred.csv")
 
 
 #on ajoute des variables
-# gam_ok <- gam(formula = Zonal_Price ~ s(daynum,k=7,bs="cc") + s(month,k=12,bs='cc') +
-#                s(prev_day_price,k=50,bs="tp") + s(hour, k=24, bs='cc') +
-#                s(prev_week_price,k=50,bs="tp") + s(Min_Price,k=50,bs="tp")+
-#                s(Max_price,k=50,bs="tp") + s(sqrzonalload,k=50,bs="tp") +
-#                s(Forecasted_Zonal_Load,bs="tp") + s(cubzonalload,k=100,bs="tp") +
-#                s(Forecasted_Total_Load) + s(sqrtotalload,k=50,bs="tp") +
-#                s(cubtotalload,k=100,bs="tp"),
-#              data = prices[169:nrow(prices),])
+gam_ok <- gam(formula = Zonal_Price ~ s(daynum,k=7,bs="cc") + s(month,k=12,bs='cc') +
+               s(prev_day_price,k=50,bs="tp") + s(hour, k=24, bs='cc') +
+               s(prev_week_price,k=50,bs="tp") + s(Min_Price,k=50,bs="tp")+
+               s(Max_price,k=50,bs="tp") + s(sqrzonalload,k=50,bs="tp") +
+               s(Forecasted_Zonal_Load,bs="tp") + s(cubzonalload,k=100,bs="tp") +
+               s(Forecasted_Total_Load) + s(sqrtotalload,k=50,bs="tp") +
+               s(cubtotalload,k=100,bs="tp"),
+             data = prices[169:nrow(prices),])
 
-# 
+
 # summary(gam_2)
 # gam.check(gam_2)
 
@@ -113,7 +113,28 @@ gam_pred <- gsub("-", "", gam_pred)
 
 
 
-for (i in (1:length(date_pred))){
-  gam_pred[i] <- get_gam(date_pred[i])
-}
+# for (i in (1:length(date_pred))){
+#   gam_pred[i] <- get_gam(date_pred[i])
+# }
+
+
+#sauvegarder les resultats dans deux tables
+
+#TABLE 1 : table des erreurs et force du modele
+#variables : R2_adj, rmse, mae
+#individus : dates a predire
+
+
+
+
+
+
+#TABLE 2 : table des predictions
+#variables : dates
+#individus : heures 
+#valeurs : pred
+
+
+
+
 
