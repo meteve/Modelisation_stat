@@ -1,4 +1,3 @@
-
 library(tidyverse)
 library(mgcv)
 library(stargazer)
@@ -31,16 +30,16 @@ df_pred <- read_csv(file = "data/df_pred.csv")
 
 
 #on ajoute des variables
-gam_ok <- gam(formula = Zonal_Price ~ s(daynum,k=7,bs="cc") + s(month,k=12,bs='cc') +
-               s(prev_day_price,k=50,bs="tp") + s(hour, k=24, bs='cc') +
-               s(prev_week_price,k=50,bs="tp") + s(Min_Price,k=50,bs="tp")+
-               s(Max_price,k=50,bs="tp") + s(sqrzonalload,k=50,bs="tp") +
-               s(Forecasted_Zonal_Load,bs="tp") + s(cubzonalload,k=100,bs="tp") +
-               s(Forecasted_Total_Load) + s(sqrtotalload,k=50,bs="tp") +
-               s(cubtotalload,k=100,bs="tp"),
-             data = prices[169:nrow(prices),])
+# gam_ok <- gam(formula = Zonal_Price ~ s(daynum,k=7,bs="cc") + s(month,k=12,bs='cc') +
+#                s(prev_day_price,k=50,bs="tp") + s(hour, k=24, bs='cc') +
+#                s(prev_week_price,k=50,bs="tp") + s(Min_Price,k=50,bs="tp")+
+#                s(Max_price,k=50,bs="tp") + s(sqrzonalload,k=50,bs="tp") +
+#                s(Forecasted_Zonal_Load,bs="tp") + s(cubzonalload,k=100,bs="tp") +
+#                s(Forecasted_Total_Load) + s(sqrtotalload,k=50,bs="tp") +
+#                s(cubtotalload,k=100,bs="tp"),
+#              data = prices[169:nrow(prices),])
 
-
+# 
 # summary(gam_2)
 # gam.check(gam_2)
 
@@ -82,18 +81,18 @@ get_mae <- function(y,yhat){
 get_gam <- function(date){
   index <- which(grepl(pattern = date, prices$timestamp))[1]
   gam_date <- gam(formula = Zonal_Price ~ s(daynum,k=7,bs="cc") + s(month,k=12,bs='cc') +
-                       s(prev_day_price,k=50,bs="tp") + s(hour, k=24, bs='cc') +
-                       s(prev_week_price,k=50,bs="tp") + s(Min_Price,k=50,bs="tp")+
-                       s(Max_price,k=50,bs="tp") + s(sqrzonalload,k=50,bs="tp") +
-                       s(Forecasted_Zonal_Load, bs="tp") + s(cubzonalload,k=100,bs="tp") +
-                       s(Forecasted_Total_Load, bs="tp") + s(sqrtotalload,k=50,bs="tp") +
-                       s(cubtotalload,k=100,bs="tp"),
-                     data = prices[169:(index-1),])
+                    s(prev_day_price,k=50,bs="tp") + s(hour, k=24, bs='cc') +
+                    s(prev_week_price,k=50,bs="tp") + s(Min_Price,k=50,bs="tp")+
+                    s(Max_price,k=50,bs="tp") + s(sqrzonalload,k=50,bs="tp") +
+                    s(Forecasted_Zonal_Load, bs="tp") + s(cubzonalload,k=100,bs="tp") +
+                    s(Forecasted_Total_Load, bs="tp") + s(sqrtotalload,k=50,bs="tp") +
+                    s(cubtotalload,k=100,bs="tp"),
+                  data = prices[169:(index-1),])
   pred <- predict(gam_date, newdata = filter(df_pred, grepl(pattern = date, df_pred$timestamp)))
   y <- filter(prices, grepl(pattern = date, prices$timestamp))$Zonal_Price
   rmse <- get_rmse(y = y, yhat = pred)
   mae <- get_mae(y = y, yhat = pred)
-  result <- c('gam_date' = gam_date, 'pred' = pred, 'rmse' = rmse, 'mae' = mae)
+  result <- c('r2_adj' = summary(gam_date)$r.sq, 'rmse' = rmse, 'mae' = mae, 'pred' = pred)
   return(result)
 }
 
@@ -112,10 +111,22 @@ gam_pred <- paste0('gam_', date_pred)
 gam_pred <- gsub("-", "", gam_pred)
 
 
+R2_adj <- NULL
+RMSE <- NULL
+MAE <- NULL
+pred <- NULL
 
-# for (i in (1:length(date_pred))){
-#   gam_pred[i] <- get_gam(date_pred[i])
-# }
+
+#on sauvegarde les resultats (R2 adj, pred, rmse et mae)
+
+for (i in (1:length(date_pred))){
+  res_gam <- get_gam(date_pred[i])
+  R2_adj <- c(R2_adj, res_gam[1])
+  RMSE <- c(RMSE, res_gam[2])
+  MAE <- c(MAE, res_gam[3])
+  pred <- c(pred, res_gam[4:27])
+  
+}
 
 
 #sauvegarder les resultats dans deux tables
@@ -124,9 +135,7 @@ gam_pred <- gsub("-", "", gam_pred)
 #variables : R2_adj, rmse, mae
 #individus : dates a predire
 
-
-
-
+df_gam_err <- data.frame(date_pred, R2_adj, RMSE, MAE)
 
 
 #TABLE 2 : table des predictions
@@ -134,7 +143,12 @@ gam_pred <- gsub("-", "", gam_pred)
 #individus : heures 
 #valeurs : pred
 
+heures <- 0:24
+df_gam_pred <- data.frame(heures, matrix(pred, nrow = 24))
+colnames(df_gam_pred) <- c('hour', date_pred)
 
-
+#on sauvegarde les resultats au format csv
+write_csv(df_gam_err, "data/df_gam_err.csv")
+write_csv(df_gam_pred, "data/df_gam_pred.csv")
 
 
