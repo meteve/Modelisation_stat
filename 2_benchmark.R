@@ -1,4 +1,3 @@
-
 library(tidyverse)
 library(zoo)
 library(stargazer)
@@ -12,50 +11,24 @@ df_pred <- read_csv(file = "data/df_pred.csv")
 
 
 
-# STATIONNARISATION DE LA SERIE -------------------------------------------
+
+# Stationnarisation de la série -------------------------------------------
 
 # Transformation de la série au format ts (time series)
-year_start <- prices$year[1]
-hour_start <- prices$hour[1]
-year_end <- prices$year[nrow(prices)]
-hour_end <- prices$hour[nrow(prices)]
-
 prices_ts <- ts(prices$Zonal_Price, frequency = 365*24) 
 
-
-
 # desaisonnaliser
-
 decomposition <- decompose(prices_ts) # on decompose la serie temp
 plot(decomposition)
 prices_desaiso = prices_ts / decomposition$seasonal
+plot(prices_desaiso)
 
-plot(prices_desaiso) # a quoi ca correspond??
-
-acf(prices_desaiso) # autocorrelations??
+acf(prices_desaiso) # autocorrelations
 
 
 
                          
-#jerem (pas avancé)
-
-zebi=ar(prices$Zonal_Price, aic = TRUE, order.max = NULL)
-summary(zebi)
-
-zebi1= ar(prices$Zonal_Price,method="burg", aic = TRUE, order.max = NULL)
-summary(zebi1)
-
-zebi2=ar(prices$Zonal_Price, method="ols", aic = TRUE, order.max = NULL)
-summary(zebi2)
-
-zebi3=ar(prices$Zonal_Price, method="mle", aic = TRUE, order.max = NULL)
-summary(zebi3)
-
-zebi4=ar(prices$Zonal_Price, method="yw", aic = TRUE, order.max = NULL)
-summary(zebi4)
-
-### Régression Linéaire ###
-###########################
+# Régression Linéaire -----------------------------------------------------
 
 prices2011 <- filter(prices, grepl(pattern = '2011.', timestamp))
 prices2012 <- filter(prices, grepl(pattern = '2012.', timestamp))
@@ -205,6 +178,7 @@ varImpPlot(r)
 AR.1 <- lm(Zonal_Price ~ prev_day_price + prev_day2_price + prev_week_price +
              Min_Price + day_lundi + day_samedi + day_dimanche,
            data = prices[169:nrow(prices),])
+
 
 summary(AR.1)
 

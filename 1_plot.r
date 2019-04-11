@@ -21,6 +21,10 @@ plot_prices_total
 
 ### PAR ANNEE
 
+prices2011 <- filter(prices,grepl(pattern='2011.',timestamp))
+prices2012 <- filter(prices,grepl(pattern='2012.',timestamp))
+prices2013 <- filter(prices,grepl(pattern='2013.',timestamp))
+
 # 2011
 ggplot(data = prices2011) +
   geom_line(mapping =aes(x = timestamp, y = Zonal_Price)) +
