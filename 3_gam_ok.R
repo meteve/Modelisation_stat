@@ -7,25 +7,15 @@ df_pred <- read_csv(file = "data/df_pred.csv")
 
 
 
-# GAM ---------------------------------------------------------------------
+# Selection de variables --------------------------------------------------
 
-# Topo sur la syntaxe : 
-# La forme générale peut être constatée dans le modèle ci dessous
-# s est une fonction, on peut paramétrer bs : le type de spline, k le nombre de noeuds
-# plot(gam) donne des plots pour les effets NON LINEAIRES
+lm_1 <- lm(Zonal_Price ~ daynum + month + hour + prev_day_price + 
+             prev_week_price + Min_price + Max_price + Forecasted_Zonal_Load +
+             Forecasted_Total_Load, data = prices)
 
-
-
-#on ajoute des variables
-# gam_ok <- gam(formula = Zonal_Price ~ s(daynum,k=7,bs="cc") + s(month,k=12,bs='cc') +
-#                s(prev_day_price,k=50,bs="tp") + s(hour, k=24, bs='cc') +
-#                s(prev_week_price,k=50,bs="tp") + s(Min_Price,k=50,bs="tp")+
-#                s(Max_price,k=50,bs="tp") + s(sqrzonalload,k=50,bs="tp") +
-#                s(Forecasted_Zonal_Load,bs="tp") + s(cubzonalload,k=100,bs="tp") +
-#                s(Forecasted_Total_Load) + s(sqrtotalload,k=50,bs="tp") +
-#                s(cubtotalload,k=100,bs="tp"),
-#              data = prices[169:nrow(prices),])
-
+summary(lm_1)
+stepAIC(lm_1, k = log(nrow(prices)))
+stepAIC(lm_1, k = 2)
 
 
 # fonctions qui retournent la rmse et la mae pour y et yhat donnes
@@ -33,20 +23,75 @@ get_rmse <- function(y, yhat){
   rmse <- sqrt(mean((y-yhat)^2))
   return(rmse)
 }
-
 get_mae <- function(y,yhat){
   mae <- mean(abs(y-yhat))
   return(mae)
 }
 
+# GAM ---------------------------------------------------------------------
+
+# Topo sur la syntaxe : 
+# La forme générale peut être constatée dans le modèle ci dessous
+# s est une fonction, on peut paramétrer bs : le type de spline, k le nombre de noeuds
+# plot(gam) donne des plots pour les effets NON LINEAIRES
+
+#gam avec fonction de lien logarithmique
+gam_2 <- gam(formula = Zonal_Price ~ s(daynum, k = 7, bs = 'cc') +
+               s(month, k = 12, bs = 'cc') + s(hour, k = 24, bs = 'cc') +
+               s(Forecasted_Zonal_Load, k = 40, bs = 'cc') +
+               s(Forecasted_Total_Load, k = 35, bs = 'cc') +
+               s(prev_day_price, k = 35, bs = 'cc') +  s(prev_week_price, k = 30, bs = 'cc') +
+               s(Max_price, k = 60, bs = 'tp') + s(Min_price, k = 60, bs = 'tp'), 
+             family = Gamma(link = log),
+             data = prices[169:nrow(prices),])
+
+summary(gam_2)
+gam.check(gam_2)
+
+#pour le 2013-06-06
+pred_2 <- predict(gam_2, newdata = filter(df_pred, grepl(pattern = '2013-06-06', df_pred$timestamp)))
+y <- filter(prices, grepl(pattern = '2013-06-06', prices$timestamp))$Zonal_Price
+rmse_2 <- get_rmse(y = y, yhat = exp(pred_2))
+mae_2 <- get_mae(y = y, yhat = exp(pred_2))
+
+#pour le 2013-07-18
+pred_2 <- predict(gam_2, newdata = filter(df_pred, grepl(pattern = '2013-07-18', df_pred$timestamp)))
+y <- filter(prices, grepl(pattern = '2013-07-18', prices$timestamp))$Zonal_Price
+rmse_2 <- get_rmse(y = y, yhat = exp(pred_2))
+mae_2 <- get_mae(y = y, yhat = exp(pred_2))
+
+#gam avec fonction de lien lineaire
+gam_3 <- gam(formula = Zonal_Price ~ s(daynum, k = 7, bs = 'cc') +
+               s(month, k = 12, bs = 'cc') + s(hour, k = 24, bs = 'cc') +
+               s(Forecasted_Zonal_Load, k = 40, bs = 'cc') +
+               s(Forecasted_Total_Load, k = 35, bs = 'cc') +
+               s(prev_day_price, k = 38, bs = 'cc') +  s(prev_week_price, k = 35, bs = 'cc') +
+               s(Max_price, k = 50, bs = 'tp') + s(Min_price, k = 50, bs = 'tp'),
+             data = prices[169:nrow(prices),])
+
+summary(gam_3)
+gam.check(gam_3)
+
+#pour le 2013-06-06
+pred_3 <- predict(gam_3, newdata = filter(df_pred, grepl(pattern = '2013-06-06', df_pred$timestamp)))
+y <- filter(prices, grepl(pattern = '2013-06-06', prices$timestamp))$Zonal_Price
+rmse_3 <- get_rmse(y = y, yhat = pred_3)
+mae_3 <- get_mae(y = y, yhat = pred_3)
+
+#pour le 2013-07-18
+pred_3 <- predict(gam_3, newdata = filter(df_pred, grepl(pattern = '2013-07-18', df_pred$timestamp)))
+y <- filter(prices, grepl(pattern = '2013-07-18', prices$timestamp))$Zonal_Price
+rmse_3 <- get_rmse(y = y, yhat = pred_3)
+mae_3 <- get_mae(y = y, yhat = pred_3)
+
+
 
 # fonction qui estime le modele gam pour une date donnee sur toutes les dates ulterieures
-
 get_gam <- function(date){
   index <- which(grepl(pattern = date, prices$timestamp))[1]
   gam_date <- gam(formula = Zonal_Price ~ s(daynum,k=7,bs="cc") + s(month,k=12,bs='cc') +
                     s(prev_day_price,k=50,bs="tp") + s(hour, k=24, bs='cc') +
-                    s(prev_week_price,k=50,bs="tp") + s(Min_Price,k=50,bs="tp")+
+                    s(prev_week_price,k=50,bs="tp") + s(Min_price,k=50,bs="tp")+
                     s(Max_price,k=50,bs="tp") + s(sqrzonalload,k=50,bs="tp") +
                     s(Forecasted_Zonal_Load, bs="tp") + s(cubzonalload,k=100,bs="tp") +
                     s(Forecasted_Total_Load, bs="tp") + s(sqrtotalload,k=50,bs="tp") +
@@ -77,7 +122,6 @@ RMSE <- NULL
 MAE <- NULL
 pred <- NULL
 
-
 #on sauvegarde les resultats (R2 adj, pred, rmse et mae)
 
 # for (i in (1:length(date_pred))){
@@ -89,21 +133,16 @@ pred <- NULL
 #   
 # }
 
-
 #sauvegarder les resultats dans deux tables
-
 #TABLE 1 : table des erreurs et force du modele
 #variables : R2_adj, rmse, mae
 #individus : dates a predire
-
 df_gam_err <- data.frame(date_pred, R2_adj, RMSE, MAE)
-
 
 #TABLE 2 : table des predictions
 #variables : dates
 #individus : heures 
 #valeurs : pred
-
 heures <- 0:23
 df_gam_pred <- data.frame(heures, matrix(pred, nrow = 24))
 colnames(df_gam_pred) <- c('hour', date_pred)
@@ -112,14 +151,12 @@ colnames(df_gam_pred) <- c('hour', date_pred)
 write_csv(df_gam_err, "data/df_gam_err.csv")
 write_csv(df_gam_pred, "data/df_gam_pred.csv")
 
-
 df_gam_err <- read_csv(file = "data/df_gam_err.csv",
                        col_types = cols(col_character(), col_double(),
                                         col_double(), col_double()))
-
 df_gam_pred <- read_csv(file = "data/df_gam_pred.csv")
 
-
+#on sort les resultats
 stargazer(df_gam_err, summary = FALSE)
 stargazer(round(df_gam_pred, 2), summary = FALSE)
 

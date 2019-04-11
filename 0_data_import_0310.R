@@ -76,11 +76,11 @@ previous_week_price_NA <- rep(NA, 168)
 prices$prev_week_price <- c(previous_week_price_NA, previous_week_price)
 
 # prix minimum des 24h précédentes
-Min_Price <- apply(as.matrix(25:nrow(prices)), 1,
+Min_price <- apply(as.matrix(25:nrow(prices)), 1,
                    function(i){min(prices$Zonal_Price[(i-24):i])})
-Min_Price_NA <- rep(NA, 24)
+Min_price_NA <- rep(NA, 24)
 
-prices$Min_Price <- c(Min_Price_NA, Min_Price)
+prices$Min_price <- c(Min_price_NA, Min_price)
 
 # prix maximum des 24h précédentes
 Max_price <- apply(as.matrix(25:nrow(prices)), 1,
