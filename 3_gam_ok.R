@@ -123,3 +123,18 @@ df_gam_pred <- read_csv(file = "data/df_gam_pred.csv")
 stargazer(df_gam_err, summary = FALSE)
 stargazer(round(df_gam_pred, 2), summary = FALSE)
 
+
+
+#pourquoi de si grandes erreurs en juillet 2013 et en décembre 2013?
+plot_price_month <- function(date){
+  index <- which(prices$timestamp == date)
+  prices_month <- prices[index:(index+720),]
+  p <- ggplot(prices_month) +
+    geom_line(mapping = aes(x = timestamp, y = Zonal_Price)) +
+    xlab("") + ylab("Prix dans la zone étudiée")
+  return(p)
+}
+
+plot_price_month('2013-07-01') #tres forte hausse des prix du 16 au 20 juillet
+plot_price_month('2013-12-01') #forte hausse le 17 decembre
+
