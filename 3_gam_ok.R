@@ -36,14 +36,15 @@ get_mae <- function(y,yhat){
 # plot(gam) donne des plots pour les effets NON LINEAIRES
 
 #gam avec fonction de lien logarithmique
+index <- which(grepl(pattern = '2013-07-19', prices$timestamp))[1]
 gam_2 <- gam(formula = Zonal_Price ~ s(daynum, k = 7, bs = 'cc') +
                s(month, k = 12, bs = 'cc') + s(hour, k = 24, bs = 'cc') +
-               s(Forecasted_Zonal_Load, k = 40, bs = 'cc') +
-               s(Forecasted_Total_Load, k = 35, bs = 'cc') +
-               s(prev_day_price, k = 35, bs = 'cc') +  s(prev_week_price, k = 30, bs = 'cc') +
+               s(Forecasted_Zonal_Load, k = 40, bs = 'tp') +
+               s(Forecasted_Total_Load, k = 35, bs = 'tp') +
+               s(prev_day_price, k = 35, bs = 'tp') +  s(prev_week_price, k = 30, bs = 'tp') +
                s(Max_price, k = 60, bs = 'tp') + s(Min_price, k = 60, bs = 'tp'), 
              family = Gamma(link = log),
-             data = prices[169:nrow(prices),])
+             data = prices[169:(index-1),])
 
 summary(gam_2)
 gam.check(gam_2)
@@ -54,20 +55,20 @@ y <- filter(prices, grepl(pattern = '2013-06-06', prices$timestamp))$Zonal_Price
 rmse_2 <- get_rmse(y = y, yhat = exp(pred_2))
 mae_2 <- get_mae(y = y, yhat = exp(pred_2))
 
-#pour le 2013-07-18
-pred_2 <- predict(gam_2, newdata = filter(df_pred, grepl(pattern = '2013-07-18', df_pred$timestamp)))
-y <- filter(prices, grepl(pattern = '2013-07-18', prices$timestamp))$Zonal_Price
+#pour le 2013-07-19
+pred_2 <- predict(gam_2, newdata = filter(df_pred, grepl(pattern = '2013-07-19', df_pred$timestamp)))
+y <- filter(prices, grepl(pattern = '2013-07-19', prices$timestamp))$Zonal_Price
 rmse_2 <- get_rmse(y = y, yhat = exp(pred_2))
 mae_2 <- get_mae(y = y, yhat = exp(pred_2))
 
 #gam avec fonction de lien lineaire
 gam_3 <- gam(formula = Zonal_Price ~ s(daynum, k = 7, bs = 'cc') +
                s(month, k = 12, bs = 'cc') + s(hour, k = 24, bs = 'cc') +
-               s(Forecasted_Zonal_Load, k = 40, bs = 'cc') +
-               s(Forecasted_Total_Load, k = 35, bs = 'cc') +
-               s(prev_day_price, k = 38, bs = 'cc') +  s(prev_week_price, k = 35, bs = 'cc') +
+               s(Forecasted_Zonal_Load, k = 40, bs = 'tp') +
+               s(Forecasted_Total_Load, k = 35, bs = 'tp') +
+               s(prev_day_price, k = 38, bs = 'tp') +  s(prev_week_price, k = 35, bs = 'tp') +
                s(Max_price, k = 50, bs = 'tp') + s(Min_price, k = 50, bs = 'tp'),
-             data = prices[169:nrow(prices),])
+             data = prices[169:(index-1),])
 
 summary(gam_3)
 gam.check(gam_3)
@@ -78,9 +79,9 @@ y <- filter(prices, grepl(pattern = '2013-06-06', prices$timestamp))$Zonal_Price
 rmse_3 <- get_rmse(y = y, yhat = pred_3)
 mae_3 <- get_mae(y = y, yhat = pred_3)
 
-#pour le 2013-07-18
-pred_3 <- predict(gam_3, newdata = filter(df_pred, grepl(pattern = '2013-07-18', df_pred$timestamp)))
-y <- filter(prices, grepl(pattern = '2013-07-18', prices$timestamp))$Zonal_Price
+#pour le 2013-07-19
+pred_3 <- predict(gam_3, newdata = filter(df_pred, grepl(pattern = '2013-07-19', df_pred$timestamp)))
+y <- filter(prices, grepl(pattern = '2013-07-19', prices$timestamp))$Zonal_Price
 rmse_3 <- get_rmse(y = y, yhat = pred_3)
 mae_3 <- get_mae(y = y, yhat = pred_3)
 
@@ -174,4 +175,3 @@ plot_price_month <- function(date){
 
 plot_price_month('2013-07-01') #tres forte hausse des prix du 16 au 20 juillet
 plot_price_month('2013-12-01') #forte hausse le 17 decembre
-
