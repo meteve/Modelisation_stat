@@ -42,7 +42,7 @@ gam_2 <- gam(formula = Zonal_Price ~ s(daynum, k = 7, bs = 'cc') +
                s(Forecasted_Zonal_Load, k = 35, bs = 'tp') +
                s(Forecasted_Total_Load, k = 32, bs = 'tp') +
                s(prev_day_price, k = 25, bs = 'tp') +  s(prev_week_price, k = 27, bs = 'tp') +
-               s(Max_price, k = 70, bs = 'tp') + s(Min_price, k = 70, bs = 'tp'), 
+               s(Max_price, k = 90, bs = 'tp') + s(Min_price, k = 90, bs = 'tp'), 
              family = Gamma(link = log),
              data = prices[169:(index-1),])
 
@@ -60,6 +60,8 @@ pred_2 <- predict(gam_2, newdata = filter(df_pred, grepl(pattern = '2013-07-19',
 y <- filter(prices, grepl(pattern = '2013-07-19', prices$timestamp))$Zonal_Price
 rmse_2 <- get_rmse(y = y, yhat = exp(pred_2))
 mae_2 <- get_mae(y = y, yhat = exp(pred_2))
+rmse_2
+mae_2
 
 #gam avec fonction de lien lineaire
 gam_3 <- gam(formula = Zonal_Price ~ s(daynum, k = 7, bs = 'cc') +
