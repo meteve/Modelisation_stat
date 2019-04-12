@@ -141,3 +141,40 @@ write_csv(df_lasso_pred, "data/df_lasso_pred.csv")
 #on sort les resultats
 stargazer(df_lasso_err, summary = FALSE)
 stargazer(round(df_lasso_pred, 2), summary = FALSE)
+
+
+
+
+
+# ARBRE -------------------------------------------------------------------
+
+get_arbre <- function(date){
+  index <- which(grepl(pattern = date, prices$timestamp))[1]
+  X <- prices[169:(index-1), c('daynum','prev_day_price','prev_day2_price',
+                               'prev_week_price','Min_price','Max_price',
+                               'Forecasted_Zonal_Load','sqrzonalload','cubzonalload')]
+  Y <- prices$Zonal_Price[169:(index-1)]
+  arbre=tree(formula=Y~X,data=X)
+  cv.arbre=cv.tree(arbre)
+  prune.arbre=prune.tree(arbre,best=10)
+  newX <- prices[index:(index+23), c('daynum','prev_day_price','prev_day2_price',
+                                     'prev_week_price','Min_price','Max_price',
+                                     'Forecasted_Zonal_Load','sqrzonalload','cubzonalload')]
+  pred <- predict(arbre, s = 10, newx = newX)
+  y <- filter(prices, grepl(pattern = date, prices$timestamp))$Zonal_Price
+  rmse <- get_rmse(y = y, yhat = pred)
+  mae <- get_mae(y = y, yhat = pred)
+  result <- c('rmse' = rmse, 'mae' = mae, 'pred' = pred)
+  return(result)
+}
+
+
+RMSE <- NULL
+MAE <- NULL
+pred <- NULL
+for (i in (1:length(date_pred))){
+  res_arbre <- get_arbre(date_pred[i])
+  RMSE <- c(RMSE, res_arbre[1])
+  MAE <- c(MAE, res_arbre[2])
+  pred <- c(pred, res_arbre[3:26])
+}
