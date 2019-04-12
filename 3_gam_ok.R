@@ -9,13 +9,13 @@ df_pred <- read_csv(file = "data/df_pred.csv")
 
 # Selection de variables --------------------------------------------------
 
-lm_1 <- lm(Zonal_Price ~ daynum + month + hour + prev_day_price + 
-             prev_week_price + Min_price + Max_price + Forecasted_Zonal_Load +
-             Forecasted_Total_Load, data = prices)
-
-summary(lm_1)
-stepAIC(lm_1, k = log(nrow(prices)))
-stepAIC(lm_1, k = 2)
+# lm_1 <- lm(Zonal_Price ~ daynum + month + hour + prev_day_price + 
+#              prev_week_price + Min_price + Max_price + Forecasted_Zonal_Load +
+#              Forecasted_Total_Load, data = prices)
+# 
+# summary(lm_1)
+# stepAIC(lm_1, k = log(nrow(prices)))
+# stepAIC(lm_1, k = 2)
 
 
 # fonctions qui retournent la rmse et la mae pour y et yhat donnes
@@ -39,10 +39,10 @@ get_mae <- function(y,yhat){
 index <- which(grepl(pattern = '2013-07-19', prices$timestamp))[1]
 gam_2 <- gam(formula = Zonal_Price ~ s(daynum, k = 7, bs = 'cc') +
                s(month, k = 12, bs = 'cc') + s(hour, k = 24, bs = 'cc') +
-               s(Forecasted_Zonal_Load, k = 40, bs = 'tp') +
-               s(Forecasted_Total_Load, k = 35, bs = 'tp') +
-               s(prev_day_price, k = 35, bs = 'tp') +  s(prev_week_price, k = 30, bs = 'tp') +
-               s(Max_price, k = 60, bs = 'tp') + s(Min_price, k = 60, bs = 'tp'), 
+               s(Forecasted_Zonal_Load, k = 35, bs = 'tp') +
+               s(Forecasted_Total_Load, k = 32, bs = 'tp') +
+               s(prev_day_price, k = 25, bs = 'tp') +  s(prev_week_price, k = 27, bs = 'tp') +
+               s(Max_price, k = 70, bs = 'tp') + s(Min_price, k = 70, bs = 'tp'), 
              family = Gamma(link = log),
              data = prices[169:(index-1),])
 
