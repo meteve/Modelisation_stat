@@ -7,16 +7,6 @@ df_pred <- read_csv(file = "data/df_pred.csv")
 
 
 
-# Selection de variables --------------------------------------------------
-
-# lm_1 <- lm(Zonal_Price ~ daynum + month + hour + prev_day_price + 
-#              prev_week_price + Min_price + Max_price + Forecasted_Zonal_Load +
-#              Forecasted_Total_Load, data = prices)
-# 
-# summary(lm_1)
-# stepAIC(lm_1, k = log(nrow(prices)))
-# stepAIC(lm_1, k = 2)
-
 
 # fonctions qui retournent la rmse et la mae pour y et yhat donnes
 get_rmse <- function(y, yhat){
@@ -35,70 +25,17 @@ get_mae <- function(y,yhat){
 # s est une fonction, on peut paramétrer bs : le type de spline, k le nombre de noeuds
 # plot(gam) donne des plots pour les effets NON LINEAIRES
 
-#gam avec fonction de lien logarithmique
-index <- which(grepl(pattern = '2013-07-19', prices$timestamp))[1]
-gam_2 <- gam(formula = Zonal_Price ~ s(daynum, k = 7, bs = 'cc') +
-               s(month, k = 12, bs = 'cc') + s(hour, k = 24, bs = 'cc') +
-               s(Forecasted_Zonal_Load, k = 35, bs = 'tp') +
-               s(Forecasted_Total_Load, k = 32, bs = 'tp') +
-               s(prev_day_price, k = 25, bs = 'tp') +  s(prev_week_price, k = 27, bs = 'tp') +
-               s(Max_price, k = 90, bs = 'tp') + s(Min_price, k = 90, bs = 'tp'), 
-             family = Gamma(link = log),
-             data = prices[169:(index-1),])
-
-summary(gam_2)
-gam.check(gam_2)
-
-#pour le 2013-06-06
-pred_2 <- predict(gam_2, newdata = filter(df_pred, grepl(pattern = '2013-06-06', df_pred$timestamp)))
-y <- filter(prices, grepl(pattern = '2013-06-06', prices$timestamp))$Zonal_Price
-rmse_2 <- get_rmse(y = y, yhat = exp(pred_2))
-mae_2 <- get_mae(y = y, yhat = exp(pred_2))
-
-#pour le 2013-07-19
-pred_2 <- predict(gam_2, newdata = filter(df_pred, grepl(pattern = '2013-07-19', df_pred$timestamp)))
-y <- filter(prices, grepl(pattern = '2013-07-19', prices$timestamp))$Zonal_Price
-rmse_2 <- get_rmse(y = y, yhat = exp(pred_2))
-mae_2 <- get_mae(y = y, yhat = exp(pred_2))
-rmse_2
-mae_2
-
-#gam avec fonction de lien lineaire
-gam_3 <- gam(formula = Zonal_Price ~ s(daynum, k = 7, bs = 'cc') +
-               s(month, k = 12, bs = 'cc') + s(hour, k = 24, bs = 'cc') +
-               s(Forecasted_Zonal_Load, k = 40, bs = 'tp') +
-               s(Forecasted_Total_Load, k = 35, bs = 'tp') +
-               s(prev_day_price, k = 38, bs = 'tp') +  s(prev_week_price, k = 35, bs = 'tp') +
-               s(Max_price, k = 50, bs = 'tp') + s(Min_price, k = 50, bs = 'tp'),
-             data = prices[169:(index-1),])
-
-summary(gam_3)
-gam.check(gam_3)
-
-#pour le 2013-06-06
-pred_3 <- predict(gam_3, newdata = filter(df_pred, grepl(pattern = '2013-06-06', df_pred$timestamp)))
-y <- filter(prices, grepl(pattern = '2013-06-06', prices$timestamp))$Zonal_Price
-rmse_3 <- get_rmse(y = y, yhat = pred_3)
-mae_3 <- get_mae(y = y, yhat = pred_3)
-
-#pour le 2013-07-19
-pred_3 <- predict(gam_3, newdata = filter(df_pred, grepl(pattern = '2013-07-19', df_pred$timestamp)))
-y <- filter(prices, grepl(pattern = '2013-07-19', prices$timestamp))$Zonal_Price
-rmse_3 <- get_rmse(y = y, yhat = pred_3)
-mae_3 <- get_mae(y = y, yhat = pred_3)
-
-
 
 # fonction qui estime le modele gam pour une date donnee sur toutes les dates ulterieures
 get_gam <- function(date){
   index <- which(grepl(pattern = date, prices$timestamp))[1]
-  gam_date <- gam(formula = Zonal_Price ~ s(daynum,k=7,bs="cc") + s(month,k=12,bs='cc') +
-                    s(prev_day_price,k=50,bs="tp") + s(hour, k=24, bs='cc') +
-                    s(prev_week_price,k=50,bs="tp") + s(Min_price,k=50,bs="tp")+
-                    s(Max_price,k=50,bs="tp") + s(sqrzonalload,k=50,bs="tp") +
-                    s(Forecasted_Zonal_Load, bs="tp") + s(cubzonalload,k=100,bs="tp") +
-                    s(Forecasted_Total_Load, bs="tp") + s(sqrtotalload,k=50,bs="tp") +
-                    s(cubtotalload,k=100,bs="tp"),
+  gam_date <- gam(formula = Zonal_Price ~ s(daynum, k = 7, bs = 'cc') +
+                    s(month, k = 12, bs = 'cc') + s(hour, k = 24, bs = 'cc') +
+                    s(Forecasted_Zonal_Load, k = 35, bs = 'tp') +
+                    s(Forecasted_Total_Load, k = 32, bs = 'tp') +
+                    s(prev_day_price, k = 25, bs = 'tp') +  s(prev_week_price, k = 27, bs = 'tp') +
+                    s(Max_price, k = 50, bs = 'tp') + s(Min_price, k = 50, bs = 'tp'), 
+                  family = Gamma(link = log),
                   data = prices[169:(index-1),])
   pred <- predict(gam_date, newdata = filter(df_pred, grepl(pattern = date, df_pred$timestamp)))
   y <- filter(prices, grepl(pattern = date, prices$timestamp))$Zonal_Price
@@ -120,21 +57,21 @@ gam_pred <- paste0('gam_', date_pred)
 gam_pred <- gsub("-", "", gam_pred)
 
 
-R2_adj <- NULL
-RMSE <- NULL
-MAE <- NULL
-pred <- NULL
+
 
 #on sauvegarde les resultats (R2 adj, pred, rmse et mae)
-
-# for (i in (1:length(date_pred))){
-#   res_gam <- get_gam(date_pred[i])
-#   R2_adj <- c(R2_adj, res_gam[1])
-#   RMSE <- c(RMSE, res_gam[2])
-#   MAE <- c(MAE, res_gam[3])
-#   pred <- c(pred, res_gam[4:27])
-#   
-# }
+R2_adj <- vector("numeric", 15)
+RMSE <- vector("numeric", 15)
+MAE <- vector("numeric", 15)
+pred <- vector("list", 15)
+for (i in (1:length(date_pred))){
+  res_gam <- get_gam(date_pred[i])
+  R2_adj[i] <- res_gam[1]
+  RMSE[i] <- res_gam[2]
+  MAE[i] <- res_gam[3]
+  pred[[i]] <- res_gam[4:27]
+}
+pred <- unlist(pred)
 
 #sauvegarder les resultats dans deux tables
 #TABLE 1 : table des erreurs et force du modele
