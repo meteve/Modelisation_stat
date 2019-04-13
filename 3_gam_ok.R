@@ -7,16 +7,6 @@ df_pred <- read_csv(file = "data/df_pred.csv")
 
 
 
-# Selection de variables --------------------------------------------------
-
-# lm_1 <- lm(Zonal_Price ~ daynum + month + hour + prev_day_price + 
-#              prev_week_price + Min_price + Max_price + Forecasted_Zonal_Load +
-#              Forecasted_Total_Load, data = prices)
-# 
-# summary(lm_1)
-# stepAIC(lm_1, k = log(nrow(prices)))
-# stepAIC(lm_1, k = 2)
-
 
 # fonctions qui retournent la rmse et la mae pour y et yhat donnes
 get_rmse <- function(y, yhat){
