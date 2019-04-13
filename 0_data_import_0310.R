@@ -6,7 +6,8 @@ library(plyr)
 
 #rm(list=ls())
 
-#
+
+
 
 # IMPORTATION DES DONNEES -------------------------------------------------
 
@@ -15,13 +16,12 @@ prices <- read_delim("data/prices.csv", delim = ";",
                      col_types = cols('timestamp' = 
                                         col_datetime("%m%d%Y %H:%M")))
 
-
-
 # on remplace les espaces par des underscore dans les noms de colonnes
 prices <- dplyr::rename(prices, ZONEID = ZONEID, timestamp = timestamp,
                  Forecasted_Total_Load = `Forecasted Total Load`,
                  Forecasted_Zonal_Load = `Forecasted Zonal Load`,
                  Zonal_Price = `Zonal Price`)
+
 
 # CREATION DE VARIABLES ---------------------------------------------------
 

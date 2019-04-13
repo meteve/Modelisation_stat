@@ -111,6 +111,7 @@ df_gam_pred[,2:16] <- exp(df_gam_pred[,2:16])
 write_csv(df_gam_err, "data/df_gam_err.csv")
 write_csv(df_gam_pred, "data/df_gam_pred.csv")
 
+#on importe les résultats
 df_gam_err <- read_csv(file = "data/df_gam_err.csv",
                        col_types = cols(col_character(), col_double(),
                                         col_double(), col_double()))
@@ -118,7 +119,7 @@ df_gam_pred <- read_csv(file = "data/df_gam_pred.csv")
 
 #on sort les resultats
 stargazer(df_gam_err, summary = FALSE, rownames = FALSE)
-stargazer(round(df_gam_pred, 2), summary = FALSE, rownames = FALSE)
+stargazer(round(df_gam_pred, 2), summary = FALSE, rownames = FALSE, column.sep.width = '3pt')
 
 
 
@@ -134,3 +135,4 @@ plot_price_month <- function(date){
 
 plot_price_month('2013-07-01') #tres forte hausse des prix du 16 au 20 juillet
 plot_price_month('2013-12-01') #forte hausse le 17 decembre
+

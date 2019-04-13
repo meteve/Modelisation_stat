@@ -5,8 +5,8 @@ library(gridExtra)
 
 prices <- read_csv(file = "data/tidy_prices.csv")
 
-# Analyse univariee du prix -----------------------------------------------
 
+# Analyse univariee du prix -----------------------------------------------
 
 #### SUR TOUTE LA PERIODE ####
 
