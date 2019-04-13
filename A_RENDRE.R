@@ -301,34 +301,34 @@ get_ridge <- function(date){
 
 
 #boucle sur les dates a predire
-RMSE <- vector("numeric", 15)
-MAE <- vector("numeric", 15)
-pred <- vector("list", 15)
-for (i in (1:length(date_pred))){
-  res_ridge <- get_ridge(date_pred[i])
-  RMSE[i] <- res_ridge[1]
-  MAE[i] <- res_ridge[2]
-  pred[[i]] <- res_ridge[3:26]
-}
-pred <- unlist(pred)
+# RMSE <- vector("numeric", 15)
+# MAE <- vector("numeric", 15)
+# pred <- vector("list", 15)
+# for (i in (1:length(date_pred))){
+#   res_ridge <- get_ridge(date_pred[i])
+#   RMSE[i] <- res_ridge[1]
+#   MAE[i] <- res_ridge[2]
+#   pred[[i]] <- res_ridge[3:26]
+# }
+# pred <- unlist(pred)
 
 #sauvegarder les resultats dans deux tables
 #TABLE 1 : table des erreurs et force du modele
 #variables : R2_adj, rmse, mae
 #individus : dates a predire
-df_ridge_err <- data.frame(date_pred, RMSE, MAE)
-
-#TABLE 2 : table des predictions
-#variables : dates
-#individus : heures 
-#valeurs : pred
-heures <- 0:23
-df_ridge_pred <- data.frame(heures, matrix(pred, nrow = 24))
-colnames(df_ridge_pred) <- c('hour', date_pred)
-
-#on sauvegarde les resultats au format csv
-write_csv(df_ridge_err, "data/df_ridge_err.csv")
-write_csv(df_ridge_pred, "data/df_ridge_pred.csv")
+# df_ridge_err <- data.frame(date_pred, RMSE, MAE)
+# 
+# #TABLE 2 : table des predictions
+# #variables : dates
+# #individus : heures 
+# #valeurs : pred
+# heures <- 0:23
+# df_ridge_pred <- data.frame(heures, matrix(pred, nrow = 24))
+# colnames(df_ridge_pred) <- c('hour', date_pred)
+# 
+# #on sauvegarde les resultats au format csv
+# write_csv(df_ridge_err, "data/df_ridge_err.csv")
+# write_csv(df_ridge_pred, "data/df_ridge_pred.csv")
 
 #on importe les resultats (pour ne pas encore faire tourner la boucle)
 df_ridge_err <- read_csv(file = 'data/df_ridge_err.csv',
@@ -363,34 +363,34 @@ get_lasso <- function(date){
 
 
 #boucle sur les dates a predire
-RMSE <- vector("numeric", 15)
-MAE <- vector("numeric", 15)
-pred <- vector("list", 15)
-for (i in (1:length(date_pred))){
-  res_lasso <- get_lasso(date_pred[i])
-  RMSE[i] <- res_lasso[1]
-  MAE[i] <- res_lasso[2]
-  pred[[i]] <- res_lasso[3:26]
-}
-pred <- unlist(pred)
+# RMSE <- vector("numeric", 15)
+# MAE <- vector("numeric", 15)
+# pred <- vector("list", 15)
+# for (i in (1:length(date_pred))){
+#   res_lasso <- get_lasso(date_pred[i])
+#   RMSE[i] <- res_lasso[1]
+#   MAE[i] <- res_lasso[2]
+#   pred[[i]] <- res_lasso[3:26]
+# }
+# pred <- unlist(pred)
 
 #sauvegarder les resultats dans deux tables
 #TABLE 1 : table des erreurs et force du modele
 #variables : R2_adj, rmse, mae
 #individus : dates a predire
-df_lasso_err <- data.frame(date_pred, RMSE, MAE)
-
-#TABLE 2 : table des predictions
-#variables : dates
-#individus : heures 
-#valeurs : pred
-heures <- 0:23
-df_lasso_pred <- data.frame(heures, matrix(pred, nrow = 24))
-colnames(df_lasso_pred) <- c('hour', date_pred)
-
-#on sauvegarde les resultats au format csv
-write_csv(df_lasso_err, "data/df_lasso_err.csv")
-write_csv(df_lasso_pred, "data/df_lasso_pred.csv")
+# df_lasso_err <- data.frame(date_pred, RMSE, MAE)
+# 
+# #TABLE 2 : table des predictions
+# #variables : dates
+# #individus : heures 
+# #valeurs : pred
+# heures <- 0:23
+# df_lasso_pred <- data.frame(heures, matrix(pred, nrow = 24))
+# colnames(df_lasso_pred) <- c('hour', date_pred)
+# 
+# #on sauvegarde les resultats au format csv
+# write_csv(df_lasso_err, "data/df_lasso_err.csv")
+# write_csv(df_lasso_pred, "data/df_lasso_pred.csv")
 
 #on importe les resultats (pour ne pas encore faire tourner la boucle)
 df_lasso_err <- read_csv(file = "data/df_lasso_err.csv",
@@ -423,35 +423,35 @@ get_arbre <- function(date){
 
 
 #boucle sur les dates a predire
-RMSE <- vector("numeric", 15)
-MAE <- vector("numeric", 15)
-pred <- vector("list", 15)
-for (i in (1:length(date_pred))){
-  res_arbre <- get_arbre(date_pred[i])
-  RMSE[i] <- res_arbre[1]
-  MAE[i] <- res_arbre[2]
-  pred[[i]] <- res_arbre[3:26]
-}
-pred <- unlist(pred)
+# RMSE <- vector("numeric", 15)
+# MAE <- vector("numeric", 15)
+# pred <- vector("list", 15)
+# for (i in (1:length(date_pred))){
+#   res_arbre <- get_arbre(date_pred[i])
+#   RMSE[i] <- res_arbre[1]
+#   MAE[i] <- res_arbre[2]
+#   pred[[i]] <- res_arbre[3:26]
+# }
+# pred <- unlist(pred)
 
 
 #sauvegarder les resultats dans deux tables
 #TABLE 1 : table des erreurs et force du modele
 #variables : R2_adj, rmse, mae
 #individus : dates a predire
-df_tree_err <- data.frame(date_pred, RMSE, MAE)
-
-#TABLE 2 : table des predictions
-#variables : dates
-#individus : heures
-#valeurs : pred
-heures <- 0:23
-df_tree_pred <- data.frame(heures, matrix(pred, nrow = 24))
-colnames(df_tree_pred) <- c('hour', date_pred)
-
-#on sauvegarde les resultats au format csv
-write_csv(df_tree_err, "data/df_tree_err.csv")
-write_csv(df_tree_pred, "data/df_tree_pred.csv")
+# df_tree_err <- data.frame(date_pred, RMSE, MAE)
+# 
+# #TABLE 2 : table des predictions
+# #variables : dates
+# #individus : heures
+# #valeurs : pred
+# heures <- 0:23
+# df_tree_pred <- data.frame(heures, matrix(pred, nrow = 24))
+# colnames(df_tree_pred) <- c('hour', date_pred)
+# 
+# #on sauvegarde les resultats au format csv
+# write_csv(df_tree_err, "data/df_tree_err.csv")
+# write_csv(df_tree_pred, "data/df_tree_pred.csv")
 
 #on importe les resultats (pour ne pas encore faire tourner la boucle)
 df_tree_err <- read_csv(file = "data/df_tree_err.csv",
@@ -510,39 +510,39 @@ get_gam <- function(date){
 
 #appliquons cette fonction a toutes les dates que nous devons predire
 #on sauvegarde les resultats (R2 adj, pred, rmse et mae)
-R2_adj <- vector("numeric", 15)
-RMSE <- vector("numeric", 15)
-MAE <- vector("numeric", 15)
-pred <- vector("list", 15)
-for (i in (1:length(date_pred))){
-  res_gam <- get_gam(date_pred[i])
-  R2_adj[i] <- res_gam[1]
-  RMSE[i] <- res_gam[2]
-  MAE[i] <- res_gam[3]
-  pred[[i]] <- res_gam[4:27]
-}
-pred <- unlist(pred)
+# R2_adj <- vector("numeric", 15)
+# RMSE <- vector("numeric", 15)
+# MAE <- vector("numeric", 15)
+# pred <- vector("list", 15)
+# for (i in (1:length(date_pred))){
+#   res_gam <- get_gam(date_pred[i])
+#   R2_adj[i] <- res_gam[1]
+#   RMSE[i] <- res_gam[2]
+#   MAE[i] <- res_gam[3]
+#   pred[[i]] <- res_gam[4:27]
+# }
+# pred <- unlist(pred)
 
 #sauvegarder les resultats dans deux tables
 #TABLE 1 : table des erreurs et force du modele
 #variables : R2_adj, rmse, mae
 #individus : dates a predire
-df_gam_err <- data.frame(date_pred, R2_adj, RMSE, MAE)
-
-#TABLE 2 : table des predictions
-#variables : dates
-#individus : heures 
-#valeurs : pred
-heures <- 0:23
-df_gam_pred <- data.frame(heures, matrix(pred, nrow = 24))
-colnames(df_gam_pred) <- c('hour', date_pred)
-#on repasse aux valeur exponentielles
-df_gam_pred[,2:16] <- exp(df_gam_pred[,2:16])
-
-
-#on sauvegarde les resultats au format csv
-write_csv(df_gam_err, "data/df_gam_err.csv")
-write_csv(df_gam_pred, "data/df_gam_pred.csv")
+# df_gam_err <- data.frame(date_pred, R2_adj, RMSE, MAE)
+# 
+# #TABLE 2 : table des predictions
+# #variables : dates
+# #individus : heures 
+# #valeurs : pred
+# heures <- 0:23
+# df_gam_pred <- data.frame(heures, matrix(pred, nrow = 24))
+# colnames(df_gam_pred) <- c('hour', date_pred)
+# #on repasse aux valeur exponentielles
+# df_gam_pred[,2:16] <- exp(df_gam_pred[,2:16])
+# 
+# 
+# #on sauvegarde les resultats au format csv
+# write_csv(df_gam_err, "data/df_gam_err.csv")
+# write_csv(df_gam_pred, "data/df_gam_pred.csv")
 
 #on importe les résultats
 df_gam_err <- read_csv(file = "data/df_gam_err.csv",
