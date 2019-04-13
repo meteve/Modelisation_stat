@@ -37,6 +37,9 @@ library(stargazer)
 
 
 
+
+
+
 ##################################################################################
 ############# PARTIE 0 : NETTOYAGE  DE LA BASE ET CREATION VARIABLES #############
 ##################################################################################
@@ -148,11 +151,11 @@ date_pred <- c('2013-06-06', '2013-06-17', '2013-06-24', '2013-07-04',
 list_df_pred <- lapply(date_pred, get_df_pred)
 #dataframe des dates a predire
 df_pred <- ldply(list_df_pred)
-head(df_pred)
 
 #on exporte les donnees nettoyees
 write_csv(df_pred, "data/df_pred.csv")
 write_csv(prices, "data/tidy_prices.csv")
+
 
 
 
@@ -253,6 +256,8 @@ ggplot(df_graph) +
                      name = "") +
   theme_bw() +
   xlab("") + ylab("Prix et consommation prédite (valeurs centrées réduites)")
+
+
 
 
 
@@ -478,6 +483,7 @@ stargazer(df_benchmark_err, summary = FALSE, rownames = FALSE)
 
 
 
+
 ##################################################################################
 ############################# PARTIE 3 : MODELES GAM #############################
 ##################################################################################
@@ -567,6 +573,7 @@ plot_price_month <- function(date){
 
 plot_price_month('2013-07-01') #tres forte hausse des prix du 16 au 20 juillet
 plot_price_month('2013-12-01') #forte hausse le 17 decembre
+
 
 
 
