@@ -46,8 +46,17 @@ get_gam <- function(date){
 }
 
 
-#appliquons cette fonction a toutes les dates que nous devons predire
 
+gam_graph <- gam(formula = Zonal_Price ~ s(daynum, k = 7, bs = 'cc') +
+      s(month, k = 12, bs = 'cc') + s(hour, k = 24, bs = 'cc') +
+      s(Forecasted_Zonal_Load, k = 35, bs = 'tp') +
+      s(Forecasted_Total_Load, k = 32, bs = 'tp') +
+      s(prev_day_price, k = 25, bs = 'tp') +  s(prev_week_price, k = 27, bs = 'tp') +
+      s(Max_price, k = 50, bs = 'tp') + s(Min_price, k = 50, bs = 'tp'), 
+    family = Gamma(link = log),
+    data = prices[169:(index-1),])
+
+#appliquons cette fonction a toutes les dates que nous devons predire
 date_pred <- c('2013-06-06', '2013-06-17', '2013-06-24', '2013-07-04',
                '2013-07-09', '2013-07-13', '2013-07-16', '2013-07-18',
                '2013-07-19', '2013-07-20', '2013-07-24', '2013-07-25',
@@ -102,8 +111,8 @@ df_gam_err <- read_csv(file = "data/df_gam_err.csv",
 df_gam_pred <- read_csv(file = "data/df_gam_pred.csv")
 
 #on sort les resultats
-stargazer(df_gam_err, summary = FALSE)
-stargazer(round(df_gam_pred, 2), summary = FALSE)
+stargazer(df_gam_err, summary = FALSE, rownames = FALSE)
+stargazer(round(df_gam_pred, 2), summary = FALSE, rownames = FALSE)
 
 
 
