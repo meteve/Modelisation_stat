@@ -21,8 +21,8 @@ df_lasso_pred <- read_csv(file = "data/df_lasso_pred.csv")
 df_ridge_err <- read_csv(file = "data/df_ridge_err.csv")
 df_ridge_pred <- read_csv(file = "data/df_ridge_pred.csv")
 
-#df_forest_err <- read_csv(file = "data/df_forest_err.csv")
-#df_forest_pred <- read_csv(file = "data/df_forest_pred.csv")
+df_tree_err <- read_csv(file = "data/df_tree_err.csv")
+df_tree_pred <- read_csv(file = "data/df_tree_pred.csv")
 
 #resultats des gam
 df_gam_err <- read_csv(file = "data/df_gam_err.csv")
@@ -48,19 +48,25 @@ tidy_ridge <- df_ridge_pred %>%
          `2013-07-24`, `2013-07-25`, `2013-12-06`, `2013-12-07`, `2013-12-17`,
          key = "day", value = "Ridge")
 
-tidy_lasso <- df_ridge_pred %>% 
+tidy_lasso <- df_lasso_pred %>% 
   gather(`2013-06-06`, `2013-06-17`, `2013-06-24`, `2013-07-04`, `2013-07-09`,
          `2013-07-13`, `2013-07-16`, `2013-07-18`, `2013-07-19`, `2013-07-20`,
          `2013-07-24`, `2013-07-25`, `2013-12-06`, `2013-12-07`, `2013-12-17`,
          key = "day", value = "LASSO")
 
+tidy_tree <- df_tree_pred %>% 
+  gather(`2013-06-06`, `2013-06-17`, `2013-06-24`, `2013-07-04`, `2013-07-09`,
+         `2013-07-13`, `2013-07-16`, `2013-07-18`, `2013-07-19`, `2013-07-20`,
+         `2013-07-24`, `2013-07-25`, `2013-12-06`, `2013-12-07`, `2013-12-17`,
+         key = "day", value = "Arbre")
 
 
-df_pred_plot <- left_join(left_join(left_join(tidy_real, tidy_gam),
-                                              tidy_ridge), tidy_lasso)
+
+df_pred_plot <- left_join(left_join(left_join(left_join(tidy_real, tidy_gam),
+                                              tidy_ridge), tidy_lasso), tidy_tree)
 
 df_pred_plot <- df_pred_plot %>%
-  gather(`real_prices`, `GAM`, `Ridge`, `LASSO`,
+  gather(`real_prices`, `GAM`, `Ridge`, `LASSO`, `Arbre`,
          key = 'Modele', value = 'prediction') %>%
   mutate(time = paste0(day, ' ', hour, 'h'))
 
@@ -69,8 +75,8 @@ df_pred_plot <- df_pred_plot %>%
 ggplot(data = df_pred_plot[index,]) +
   geom_line(mapping = aes(x = time, y = prediction, color = Modele, group = Modele)) +
   scale_colour_brewer(name = '',
-                      limits = c("real_prices", "GAM", "Ridge", "LASSO"),
-                      labels = c("Prix réels", "GAM", "Ridge", "LASSO"),
+                      limits = c("real_prices", "GAM", "Ridge", "LASSO", "Arbre"),
+                      labels = c("Prix réels", "GAM", "Ridge", "LASSO", "Arbre"),
                       palette = 'Set1') +
   scale_x_discrete(labels = 0:23, breaks = waiver()) +
   theme_bw()
@@ -83,8 +89,8 @@ get_plot_pred <- function(date){
   p <- ggplot(data = df_pred_plot[index,]) +
     geom_line(mapping = aes(x = time, y = prediction, color = Modele, group = Modele)) +
     scale_colour_brewer(name = '',
-                        limits = c("real_prices", "GAM", "Ridge", "LASSO"),
-                        labels = c("Prix réels", "GAM", "Ridge", "LASSO"),
+                        limits = c("real_prices", "GAM", "Ridge", "LASSO", "Arbre"),
+                        labels = c("Prix réels", "GAM", "Ridge", "LASSO", "Arbre"),
                         palette = 'Set1') +
     scale_x_discrete(labels = 0:23, breaks = waiver()) +
     theme_bw()
@@ -95,11 +101,8 @@ get_plot_pred <- function(date){
 
 
 #graph pour le mois de juin
-
 grid_arrange_shared_legend(get_plot_pred('2013-06-06'), get_plot_pred('2013-06-17'),
                            get_plot_pred('2013-06-24'), nrow = 2, ncol = 2)
-
-
 
 
 #graph pour le mois de jullet

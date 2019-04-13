@@ -56,6 +56,12 @@ gam_graph <- gam(formula = Zonal_Price ~ s(daynum, k = 7, bs = 'cc') +
     family = Gamma(link = log),
     data = prices[169:(index-1),])
 
+summary(gam_graph)
+plot(gam_graph)
+par(mfrow = c(3,3))
+plot.gam(gam_graph)
+par(mfrox = c(1,1))
+
 #appliquons cette fonction a toutes les dates que nous devons predire
 date_pred <- c('2013-06-06', '2013-06-17', '2013-06-24', '2013-07-04',
                '2013-07-09', '2013-07-13', '2013-07-16', '2013-07-18',

@@ -1,11 +1,7 @@
 library(tidyverse)
-library(zoo)
 library(stargazer)
-library(broom)
-library(MASS)
-library(tree)
-library(randomForest)
 library(glmnet)
+library(rpart)
 
 prices <- read_csv(file = "data/tidy_prices.csv")
 df_pred <- read_csv(file = "data/df_pred.csv")
@@ -150,21 +146,17 @@ stargazer(round(df_lasso_pred, 2), summary = FALSE)
 
 # Arbre -------------------------------------------------------------------
 
-# ARBRE -------------------------------------------------------------------
-
 get_arbre <- function(date){
   index <- which(grepl(pattern = date, prices$timestamp))[1]
   X <- prices[169:(index-1), c('daynum','prev_day_price','prev_day2_price',
                                'prev_week_price','Min_price','Max_price',
                                'Forecasted_Zonal_Load','sqrzonalload','cubzonalload')]
   Y <- prices$Zonal_Price[169:(index-1)]
-  arbre = tree(formula = Y ~., data = X, method = 'anova')
-  # cv.arbre = cv.tree(arbre)
-  # prune.arbre = prune.tree(arbre,best=10)
+  arbre = rpart(formula = Y ~., data = X, method = 'anova')
   newX <- prices[index:(index+23), c('daynum','prev_day_price','prev_day2_price',
                                      'prev_week_price','Min_price','Max_price',
                                      'Forecasted_Zonal_Load','sqrzonalload','cubzonalload')]
-  pred <- predict(arbre, s = 10, newx = newX)
+  pred <- predict(arbre, s = 10, newdata = newX)
   y <- filter(prices, grepl(pattern = date, prices$timestamp))$Zonal_Price
   rmse <- get_rmse(y = y, yhat = pred)
   mae <- get_mae(y = y, yhat = pred)
@@ -173,6 +165,7 @@ get_arbre <- function(date){
 }
 
 
+#boucle sur les dates a predire
 RMSE <- vector("numeric", 15)
 MAE <- vector("numeric", 15)
 pred <- vector("list", 15)
@@ -185,86 +178,58 @@ for (i in (1:length(date_pred))){
 pred <- unlist(pred)
 
 
+#sauvegarder les resultats dans deux tables
+#TABLE 1 : table des erreurs et force du modele
+#variables : R2_adj, rmse, mae
+#individus : dates a predire
+df_tree_err <- data.frame(date_pred, RMSE, MAE)
 
-# Random Forest -----------------------------------------------------------
-# 
-# get_forest <- function(date){
-#   index <- which(grepl(pattern = date, prices$timestamp))[1]
-#   X <- prices[169:(index-1), c('daynum','prev_day_price','prev_day2_price',
-#                                'prev_week_price','Min_price','Max_price',
-#                                'Forecasted_Zonal_Load','sqrzonalload','cubzonalload')]
-#   Y <- prices$Zonal_Price[169:(index-1)]
-#   r <- randomForest(formula = Y~., data = X, ntree = 100)
-#   newX <- prices[index:(index+23), c('daynum','prev_day_price','prev_day2_price',
-#                                      'prev_week_price','Min_price','Max_price',
-#                                      'Forecasted_Zonal_Load','sqrzonalload','cubzonalload')]
-#   pred = predict(r, newdata = newX)
-#   y <- filter(prices, grepl(pattern = date, prices$timestamp))$Zonal_Price
-#   rmse <- get_rmse(y = y, yhat = pred)
-#   mae <- get_mae(y = y, yhat = pred)
-#   result <- c('rmse' = rmse, 'mae' = mae, 'pred' = pred)
-#   return(result)
-# }
-# 
-# 
-# #boucle sur les dates a predire
-# RMSE <- vector("numeric", 15)
-# MAE <- vector("numeric", 15)
-# pred <- vector("list", 15)
-# for (i in (1:length(date_pred))){
-#   res_forest <- get_forest(date_pred[i])
-#   RMSE[i] <- res_forest[1]
-#   MAE[i] <- res_forest[2]
-#   pred[[i]] <- res_forest[3:26]
-# }
-# pred <- unlist(pred)
-# 
-# #sauvegarder les resultats dans deux tables
-# #TABLE 1 : table des erreurs et force du modele
-# #variables : R2_adj, rmse, mae
-# #individus : dates a predire
-# df_forest_err <- data.frame(date_pred, RMSE, MAE)
-# 
-# #TABLE 2 : table des predictions
-# #variables : dates
-# #individus : heures 
-# #valeurs : pred
-# heures <- 0:23
-# df_forest_pred <- data.frame(heures, matrix(pred, nrow = 24))
-# colnames(df_forest_pred) <- c('hour', date_pred)
-# 
-# #on sauvegarde les resultats au format csv
-# write_csv(df_forest_err, "data/df_forest_err.csv")
-# write_csv(df_forest_pred, "data/df_forest_pred.csv")
-# 
-# #on sort les resultats
-# stargazer(df_forest_err, summary = FALSE)
-# stargazer(round(df_forest_pred, 2), summary = FALSE)
-# 
+#TABLE 2 : table des predictions
+#variables : dates
+#individus : heures
+#valeurs : pred
+heures <- 0:23
+df_tree_pred <- data.frame(heures, matrix(pred, nrow = 24))
+colnames(df_tree_pred) <- c('hour', date_pred)
+
+#on sauvegarde les resultats au format csv
+write_csv(df_tree_err, "data/df_tree_err.csv")
+write_csv(df_tree_pred, "data/df_tree_pred.csv")
+
+#on sort les resultats
+stargazer(df_tree_err, summary = FALSE)
+stargazer(round(df_tree_pred, 2), summary = FALSE)
 
 
 
 
-#tableau des erreurs des bechmark
 
+
+
+
+# Mise en forme des résultats des Benchmark -------------------------------
 df_ridge_err <- read_csv(file = 'data/df_ridge_err.csv',
-                         col_types = cols(col_character(), col_double(),
-                                          col_double()))
+                         col_types = cols(col_character(), col_double(), col_double()))
 colnames(df_ridge_err) <- c('date_pred', 'Ridge_RMSE', 'Ridge_MAE')
 
 df_lasso_err <- read_csv(file = "data/df_lasso_err.csv",
-                         col_types = cols(col_character(), col_double(),
-                                          col_double()))
+                         col_types = cols(col_character(), col_double(), col_double()))
 colnames(df_lasso_err) <- c('date_pred', 'Lasso_RMSE', 'Lasso_MAE')
 
-df_benchmark_err <- left_join(df_ridge_err, df_lasso_err)
+df_tree_err <- read_csv(file = "data/df_tree_err.csv",
+                         col_types = cols(col_character(), col_double(), col_double()))
+colnames(df_tree_err) <- c('date_pred', 'Arbre_RMSE', 'Arbre_MAE')
 
-df_benchmark_err <- df_benchmark_err %>%
+
+df_benchmark_err <- left_join(left_join(df_ridge_err, df_lasso_err), df_tree_err) %>%
   mutate(Ridge_RMSE = round(Ridge_RMSE, 2), Ridge_MAE = round(Ridge_MAE, 2),
-         Lasso_RMSE = round(Lasso_RMSE, 2), Lasso_MAE = round(Lasso_MAE, 2)) %>%
-  arrange(Ridge_RMSE, Lasso_RMSE, Ridge_MAE, Lasso_RMSE)
+         Lasso_RMSE = round(Lasso_RMSE, 2), Lasso_MAE = round(Lasso_MAE, 2),
+         Arbre_RMSE = round(Arbre_RMSE, 2), Arbre_MAE = round(Arbre_MAE, 2))
+  
+df_benchmark_err <- dplyr::select(df_benchmark_err, date_pred, Ridge_RMSE,
+                                  Lasso_RMSE, Arbre_RMSE, Ridge_MAE, Lasso_MAE, Arbre_MAE)
 
-
+#sortie latex
 stargazer(df_benchmark_err, summary = FALSE, rownames = FALSE)
 
 
