@@ -87,6 +87,11 @@ heures <- 0:23
 df_gam_pred <- data.frame(heures, matrix(pred, nrow = 24))
 colnames(df_gam_pred) <- c('hour', date_pred)
 
+df_gam_pred[,2:16] <- exp(df_gam_pred[,2:16])
+  
+
+
+
 #on sauvegarde les resultats au format csv
 write_csv(df_gam_err, "data/df_gam_err.csv")
 write_csv(df_gam_pred, "data/df_gam_pred.csv")

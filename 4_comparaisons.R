@@ -1,10 +1,5 @@
 library(tidyverse)
-library(zoo)
 library(stargazer)
-library(broom)
-library(MASS)
-library(tree)
-library(glmnet)
 library(gridExtra)
 
 prices <- read_csv(file = "data/tidy_prices.csv")
