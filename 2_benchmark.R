@@ -45,7 +45,7 @@ prices201213lasso <- na.omit(prices201213)
 
 # Première méthode : on utilise la syntaxe des ridge/Lasso avec une pénalisation nulle
 modelelineaire <- lm(Zonal_Price ~ daynum+prev_day_price+prev_day2_price +
-                       prev_week_price + Min_Price + Max_price + Forecasted_Zonal_Load +
+                       prev_week_price + Min_price + Max_price + Forecasted_Zonal_Load +
                        sqrzonalload + cubzonalload, na.action = na.omit ,
                      data = prices2011[169:nrow(prices),])
 
@@ -53,10 +53,10 @@ ytest <- prices2011lasso$Zonal_Price
 ytrain <- prices201213lasso$Zonal_Price
 
 xtrain <- as.matrix(prices201213lasso[,c('daynum','prev_day_price','prev_day2_price',
-                                         'prev_week_price','Min_Price','Max_price',
+                                         'prev_week_price','Min_price','Max_price',
                                          'Forecasted_Zonal_Load','sqrzonalload','cubzonalload')])
 xtest <- as.matrix(prices2011lasso[,c('daynum','prev_day_price','prev_day2_price',
-                                      'prev_week_price','Min_Price','Max_price',
+                                      'prev_week_price','Min_price','Max_price',
                                       'Forecasted_Zonal_Load','sqrzonalload','cubzonalload')])
 
 #modlin=lm(ytrain~xtrain,data=prices2011[169:nrow(prices2011),])
@@ -67,7 +67,7 @@ sqrt(mean((modlin.pred-ytest)^2))
 
 # Utilisation de lm standard
 modelelineaire <- lm(Zonal_Price ~ daynum + prev_day_price + prev_day2_price +
-                       prev_week_price + Min_Price + Max_price +
+                       prev_week_price + Min_price + Max_price +
                        Forecasted_Zonal_Load + sqrzonalload +
                        cubzonalload, na.action = na.omit,
                      data=prices[169:nrow(prices),])
@@ -138,10 +138,10 @@ set.seed(1)
 ytest = prices2011lasso$Zonal_Price
 ytrain = prices201213lasso$Zonal_Price
 xtrain = prices201213lasso[,c('daynum','prev_day_price','prev_day2_price',
-                              'prev_week_price','Min_Price','Max_price',
+                              'prev_week_price','Min_price','Max_price',
                               'Forecasted_Zonal_Load','sqrzonalload','cubzonalload')]
 xtest = prices2011lasso[,c('daynum','prev_day_price','prev_day2_price',
-                           'prev_week_price','Min_Price','Max_price',
+                           'prev_week_price','Min_price','Max_price',
                            'Forecasted_Zonal_Load','sqrzonalload','cubzonalload')]
 
 arbre = tree(formula = ytrain~., data = xtrain)
@@ -176,7 +176,7 @@ varImpPlot(r)
 #cf article Serinaldi
 
 AR.1 <- lm(Zonal_Price ~ prev_day_price + prev_day2_price + prev_week_price +
-             Min_Price + day_lundi + day_samedi + day_dimanche,
+             Min_price + day_lundi + day_samedi + day_dimanche,
            data = prices[169:nrow(prices),])
 
 
