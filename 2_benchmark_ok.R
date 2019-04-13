@@ -151,57 +151,57 @@ stargazer(round(df_lasso_pred, 2), summary = FALSE)
 
 
 # Random Forest -----------------------------------------------------------
-
-get_forest <- function(date){
-  index <- which(grepl(pattern = date, prices$timestamp))[1]
-  X <- prices[169:(index-1), c('daynum','prev_day_price','prev_day2_price',
-                               'prev_week_price','Min_price','Max_price',
-                               'Forecasted_Zonal_Load','sqrzonalload','cubzonalload')]
-  Y <- prices$Zonal_Price[169:(index-1)]
-  r <- randomForest(formula = Y~., data = X, ntree = 100)
-  newX <- prices[index:(index+23), c('daynum','prev_day_price','prev_day2_price',
-                                     'prev_week_price','Min_price','Max_price',
-                                     'Forecasted_Zonal_Load','sqrzonalload','cubzonalload')]
-  pred = predict(r, newdata = newX)
-  y <- filter(prices, grepl(pattern = date, prices$timestamp))$Zonal_Price
-  rmse <- get_rmse(y = y, yhat = pred)
-  mae <- get_mae(y = y, yhat = pred)
-  result <- c('rmse' = rmse, 'mae' = mae, 'pred' = pred)
-  return(result)
-}
-
-
-#boucle sur les dates a predire
-RMSE <- vector("numeric", 15)
-MAE <- vector("numeric", 15)
-pred <- vector("list", 15)
-for (i in (1:length(date_pred))){
-  res_forest <- get_forest(date_pred[i])
-  RMSE <- res_forest[1]
-  MAE <- res_forest[2]
-  pred[[i]] <- res_forest[3:26]
-}
-pred <- unlist(pred)
-
-#sauvegarder les resultats dans deux tables
-#TABLE 1 : table des erreurs et force du modele
-#variables : R2_adj, rmse, mae
-#individus : dates a predire
-df_forest_err <- data.frame(date_pred, RMSE, MAE)
-
-#TABLE 2 : table des predictions
-#variables : dates
-#individus : heures 
-#valeurs : pred
-heures <- 0:23
-df_forest_pred <- data.frame(heures, matrix(pred, nrow = 24))
-colnames(df_forest_pred) <- c('hour', date_pred)
-
-#on sauvegarde les resultats au format csv
-write_csv(df_forest_err, "data/df_forest_err.csv")
-write_csv(df_forest_pred, "data/df_forest_pred.csv")
-
-#on sort les resultats
-stargazer(df_forest_err, summary = FALSE)
-stargazer(round(df_forest_pred, 2), summary = FALSE)
-
+# 
+# get_forest <- function(date){
+#   index <- which(grepl(pattern = date, prices$timestamp))[1]
+#   X <- prices[169:(index-1), c('daynum','prev_day_price','prev_day2_price',
+#                                'prev_week_price','Min_price','Max_price',
+#                                'Forecasted_Zonal_Load','sqrzonalload','cubzonalload')]
+#   Y <- prices$Zonal_Price[169:(index-1)]
+#   r <- randomForest(formula = Y~., data = X, ntree = 100)
+#   newX <- prices[index:(index+23), c('daynum','prev_day_price','prev_day2_price',
+#                                      'prev_week_price','Min_price','Max_price',
+#                                      'Forecasted_Zonal_Load','sqrzonalload','cubzonalload')]
+#   pred = predict(r, newdata = newX)
+#   y <- filter(prices, grepl(pattern = date, prices$timestamp))$Zonal_Price
+#   rmse <- get_rmse(y = y, yhat = pred)
+#   mae <- get_mae(y = y, yhat = pred)
+#   result <- c('rmse' = rmse, 'mae' = mae, 'pred' = pred)
+#   return(result)
+# }
+# 
+# 
+# #boucle sur les dates a predire
+# RMSE <- vector("numeric", 15)
+# MAE <- vector("numeric", 15)
+# pred <- vector("list", 15)
+# for (i in (1:length(date_pred))){
+#   res_forest <- get_forest(date_pred[i])
+#   RMSE <- res_forest[1]
+#   MAE <- res_forest[2]
+#   pred[[i]] <- res_forest[3:26]
+# }
+# pred <- unlist(pred)
+# 
+# #sauvegarder les resultats dans deux tables
+# #TABLE 1 : table des erreurs et force du modele
+# #variables : R2_adj, rmse, mae
+# #individus : dates a predire
+# df_forest_err <- data.frame(date_pred, RMSE, MAE)
+# 
+# #TABLE 2 : table des predictions
+# #variables : dates
+# #individus : heures 
+# #valeurs : pred
+# heures <- 0:23
+# df_forest_pred <- data.frame(heures, matrix(pred, nrow = 24))
+# colnames(df_forest_pred) <- c('hour', date_pred)
+# 
+# #on sauvegarde les resultats au format csv
+# write_csv(df_forest_err, "data/df_forest_err.csv")
+# write_csv(df_forest_pred, "data/df_forest_pred.csv")
+# 
+# #on sort les resultats
+# stargazer(df_forest_err, summary = FALSE)
+# stargazer(round(df_forest_pred, 2), summary = FALSE)
+# 
