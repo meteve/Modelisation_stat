@@ -21,8 +21,8 @@ df_lasso_pred <- read_csv(file = "data/df_lasso_pred.csv")
 df_ridge_err <- read_csv(file = "data/df_ridge_err.csv")
 df_ridge_pred <- read_csv(file = "data/df_ridge_pred.csv")
 
-df_forest_err <- read_csv(file = "data/df_forest_err.csv")
-df_forest_pred <- read_csv(file = "data/df_forest_pred.csv")
+#df_forest_err <- read_csv(file = "data/df_forest_err.csv")
+#df_forest_pred <- read_csv(file = "data/df_forest_pred.csv")
 
 #resultats des gam
 df_gam_err <- read_csv(file = "data/df_gam_err.csv")
